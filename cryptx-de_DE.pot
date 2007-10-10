@@ -1,0 +1,45 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CryptX 1.0\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2007-10-09 09:20+0100\n"
+"Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
+"Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: c:\\cryptX\\\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: c:\\cryptX\n"
+
+#: c:\cryptX/cryptx.php:264
+msgid "CryptX Options..."
+msgstr ""
+
+#: c:\cryptX/cryptx.php:269
+msgid "Replacement for '@'"
+msgstr ""
+
+#: c:\cryptX/cryptx.php:273
+msgid "Replacement for '.'"
+msgstr ""
+
+#: c:\cryptX/cryptx.php:278
+msgid "Apply CryptX to the Content"
+msgstr ""
+
+#: c:\cryptX/cryptx.php:282
+msgid "Apply CryptX to the Excerpt"
+msgstr ""
+
+#: c:\cryptX/cryptx.php:287
+msgid "Use javascript to hide the Email-Link."
+msgstr ""
+
+#: c:\cryptX/cryptx.php:289
+msgid "Use Unicode to hide the Email-Link."
+msgstr ""
+
