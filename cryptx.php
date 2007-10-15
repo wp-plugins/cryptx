@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 1.1
+Version: 1.2
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -328,7 +328,7 @@ Class cryptX {
 				</tr>
 				<tr>
 					<td valign="top"><input name="cryptX_var[autolink]" <?php echo ($cryptX_var[autolink]) ? 'checked="checked"' : ''; ?> type="checkbox" />
-						<?php _e("Link all unlinked URL's and Emails",'cryptx'); ?></td>
+						<?php _e("Add mailto to all unlinked email addresses",'cryptx'); ?></td>
 				</tr>
 				<tr>
 					<td><input type="submit" name="submit" value="Update &raquo;" /></td>
