@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: CryptX
-Plugin URI: http://weber-nrw.de/
-Description: En-/Decrypt mailto-Links to prevent Spam Bots scanning Sorcecode for Emails.
-Version: 1.0
+Plugin URI: http://weber-nrw/wordpress/cryptx/
+Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
+Version: 1.1
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -50,22 +50,10 @@ Class cryptX {
 		// attach the converstion handlers
 		//
 		if (@$cryptX_var[theContent]) {
-			if (@$cryptX_var[java]) {
-				add_filter('the_content',
-					array(&$this, '_encrypt'));
-			} else {
-				add_filter('the_content',
-					array(&$this, '_unicode'));
-			}
+			$this->_filter('the_content');
 		}
 		if (@$cryptX_var[theExcerpt]) {
-			if (@$cryptX_var[java]) {
-				add_filter('the_content',
-					array(&$this, '_encrypt'));
-			} else {
-				add_filter('the_content',
-					array(&$this, '_unicode'));
-			}
+			$this->_filter('the_excerpt');
 		}
 
 		// attach to admin menu
@@ -103,6 +91,31 @@ Class cryptX {
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 	/**
+	* Wrap _filter
+	* @param string $content
+	* @return string
+	*/
+	function _filter($apply)
+	{
+		global $cryptX_var;
+
+		if (@$cryptX_var[autolink]) {
+			add_filter($apply,
+			array(&$this, '_autolink'));
+		}
+		if (@$cryptX_var[java]) {
+			add_filter($apply,
+				array(&$this, '_encrypt'));
+		} else {
+			add_filter($apply,
+				array(&$this, '_unicode'));
+		}
+
+	}
+
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+	/**
 	* Wrap _encrypt
 	* @param string $content
 	* @return string
@@ -125,13 +138,16 @@ Class cryptX {
 					}
 					$crypt .= chr($ascii + 1);
 				}
-				$content = str_replace( $link[1], "javascript:DeCryptX('" . $crypt . "')", $content);
+				$temp = str_replace( $link[1], "javascript:DeCryptX('" . $crypt . "')", $link[0]);
 				$new_mail = str_replace( "@", $cryptX_var[at], $link[2]);
 				$new_mail = str_replace( ".", $cryptX_var[dot], $new_mail);
-				$content = str_replace( $link[2], $new_mail, $content);
+				$temp = str_replace( $link[2], $new_mail, $temp);
+				$content = str_replace( $link[0], $temp, $content);
 			}
 
 		} // foreach
+
+
 		return $content;
 	}
 
@@ -163,6 +179,27 @@ Class cryptX {
 			}
 
 		} // foreach
+		return $content;
+	}
+
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+	function _autolink($content) {
+
+		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
+		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
+		$src[]="/^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
+		$src[]="/(<a[^>]*>)<a[^>]*>/";
+		$src[]="/(<\/A>)<\/A>/i";
+
+		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>";
+		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
+		$tar[]="<a href=\"mailto:\\0\">\\0</a>";
+		$tar[]="\\1";
+		$tar[]="\\1";
+
+		$content = preg_replace($src,$tar,$content);
+
 		return $content;
 	}
 
@@ -288,6 +325,10 @@ Class cryptX {
 						<input name="cryptX_var[java]" <?php echo (!$cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="0" />
 						<?php _e("Use Unicode to hide the Email-Link.",'cryptx'); ?>
 					</td>
+				</tr>
+				<tr>
+					<td valign="top"><input name="cryptX_var[autolink]" <?php echo ($cryptX_var[autolink]) ? 'checked="checked"' : ''; ?> type="checkbox" />
+						<?php _e("Link all unlinked URL's and Emails",'cryptx'); ?></td>
 				</tr>
 				<tr>
 					<td><input type="submit" name="submit" value="Update &raquo;" /></td>
