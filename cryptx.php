@@ -328,7 +328,7 @@ Class cryptX {
 				</tr>
 				<tr>
 					<td valign="top"><input name="cryptX_var[autolink]" <?php echo ($cryptX_var[autolink]) ? 'checked="checked"' : ''; ?> type="checkbox" />
-						<?php _e("Link all unlinked URL's and Emails",'cryptx'); ?></td>
+						<?php _e("Add mailto to all unlinked email addresses",'cryptx'); ?></td>
 				</tr>
 				<tr>
 					<td><input type="submit" name="submit" value="Update &raquo;" /></td>

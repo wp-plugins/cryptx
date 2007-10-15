@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: CryptX 1.0\n"
+"Project-Id-Version: CryptX 1.1\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-10-15 20:20+0100\n"
+"PO-Revision-Date: 2007-10-15 20:29+0100\n"
 "Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
 "Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
 "MIME-Version: 1.0\n"
@@ -44,6 +44,6 @@ msgid "Use Unicode to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>UNICODE</b> benutzen"
 
 #: D:\SVN\cryptx\trunk/cryptx.php:331
-msgid "Link all unlinked URL's and Emails"
-msgstr "Alle nicht verlinkte Email Adressen verlinken"
+msgid "Add mailto to all unlinked email addresses"
+msgstr "Füge mailto-Link zu allen nicht verlinkten Email Adressen"
 
