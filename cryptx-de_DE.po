@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CryptX 1.0\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-10-09 09:40+0100\n"
+"PO-Revision-Date: 2007-10-15 20:20+0100\n"
 "Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
 "Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
 "MIME-Version: 1.0\n"
@@ -11,35 +11,39 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Basepath: c:\\cryptX\\\n"
+"X-Poedit-Basepath: D:\\SVN\\cryptx\\trunk\n"
 "X-Poedit-KeywordsList: __;_e\n"
-"X-Poedit-SearchPath-0: c:\\cryptX\n"
+"X-Poedit-SearchPath-0: D:\\SVN\\cryptx\\trunk\n"
 
-#: c:\cryptX/cryptx.php:264
+#: D:\SVN\cryptx\trunk/cryptx.php:301
 msgid "CryptX Options..."
 msgstr "CryptX Optionen..."
 
-#: c:\cryptX/cryptx.php:269
+#: D:\SVN\cryptx\trunk/cryptx.php:306
 msgid "Replacement for '@'"
 msgstr "Ersatz f&uuml;r das '@' im Email-Link"
 
-#: c:\cryptX/cryptx.php:273
+#: D:\SVN\cryptx\trunk/cryptx.php:310
 msgid "Replacement for '.'"
 msgstr "Ersatz f&uuml;r den '.' im Email-Link"
 
-#: c:\cryptX/cryptx.php:278
+#: D:\SVN\cryptx\trunk/cryptx.php:315
 msgid "Apply CryptX to the Content"
 msgstr "CryptX auf den Inhalt anwenden"
 
-#: c:\cryptX/cryptx.php:282
+#: D:\SVN\cryptx\trunk/cryptx.php:319
 msgid "Apply CryptX to the Excerpt"
 msgstr "CryptX auf die Ausz&uuml;ge anwenden"
 
-#: c:\cryptX/cryptx.php:287
+#: D:\SVN\cryptx\trunk/cryptx.php:324
 msgid "Use javascript to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>javascript</b> benutzen"
 
-#: c:\cryptX/cryptx.php:289
+#: D:\SVN\cryptx\trunk/cryptx.php:326
 msgid "Use Unicode to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>UNICODE</b> benutzen"
+
+#: D:\SVN\cryptx\trunk/cryptx.php:331
+msgid "Link all unlinked URL's and Emails"
+msgstr "Alle nicht verlinkte Email Adressen verlinken"
 
