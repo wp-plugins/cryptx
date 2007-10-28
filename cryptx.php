@@ -170,7 +170,7 @@ Class cryptX {
 				$mailto = "mailto:" . $mail[1];
 				$crypt = '';
 				for ($i = 0; $i < strlen( $mailto ); $i++) {
-					$crypt .= "&#".ord ( substr ( $mailto, $i ) );
+					$crypt .= "&#" . ord ( substr ( $mailto, $i ) ) . ";";
 				}
 				$content = str_replace( $mailto, $crypt, $content);
 				$new_mail = str_replace( "@", $cryptX_var[at], $link[2]);
