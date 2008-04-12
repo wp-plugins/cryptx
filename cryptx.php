@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: CryptX
-Plugin URI: http://weber-nrw/wordpress/cryptx/
+Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 1.5
+Version: 1.6
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -24,7 +24,7 @@ if (!class_exists('cryptX')) {
 
 /////////////////////////////////////////////////////////////////////////////
 
-load_plugin_textdomain('cryptx', PLUGINDIR . '/' . dirname(plugin_basename (__FILE__)) );
+load_plugin_textdomain('cryptx', PLUGINDIR . '/' . dirname(plugin_basename (__FILE__)) . '/languages');
 
 $cryptX_var = (array) get_option('cryptX');
 
@@ -90,11 +90,6 @@ Class cryptX {
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	/**
-	* Wrap _filter
-	* @param string $content
-	* @return string
-	*/
 	function _filter($apply)
 	{
 		global $cryptX_var;
@@ -115,11 +110,53 @@ Class cryptX {
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	/**
-	* Wrap _encrypt
-	* @param string $content
-	* @return string
-	*/
+	function _linktext($txt)
+	{
+		global $cryptX_var;
+
+		switch ($cryptX_var[opt_linktext]) {
+
+			case 1: // alternative text for mail link
+				$linktext = $cryptX_var[alt_linktext];
+				break;
+
+			case 2: // alternative image for mail link
+				$linktext = "<img src=\"" . $cryptX_var[alt_linkimage] . "\" class=\"cryptxImage\" alt=\"email\">";
+				break;
+
+			case 3: // uploaded image for mail link
+				$imgurl = "/" . PLUGINDIR . "/" . dirname(plugin_basename (__FILE__)) . "/images/" . $cryptX_var[alt_uploadedimage];
+				$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[alt_uploadedimage] . "\">";
+				break;
+
+			default:
+				$linktext = str_replace( "@", $cryptX_var[at], $txt);
+				$linktext = str_replace( ".", $cryptX_var[dot], $linktext);
+
+		}
+
+		return $linktext;
+	}
+
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+	function _dirImages()
+	{
+		$dir = $_SERVER["DOCUMENT_ROOT"].'/'.PLUGINDIR.'/'.dirname(plugin_basename (__FILE__)).'/images';
+		$fh = opendir($dir); //Verzeichnis
+		$verzeichnisinhalt = array();
+		while (true == ($file = readdir($fh)))
+		{
+			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) //Abfrage nach gültigen Datenformat
+				{
+				$verzeichnisinhalt[] = $file;
+				}
+		}
+		return $verzeichnisinhalt;
+	}
+
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
 	function _encrypt($content)
 	{
 		global $cryptX_var;
@@ -139,9 +176,7 @@ Class cryptX {
 					$crypt .= chr($ascii + 1);
 				}
 				$temp = str_replace( $link[1], "javascript:DeCryptX('" . $crypt . "')", $link[0]);
-				$new_mail = str_replace( "@", $cryptX_var[at], $link[2]);
-				$new_mail = str_replace( ".", $cryptX_var[dot], $new_mail);
-				$temp = str_replace( $link[2], $new_mail, $temp);
+				$temp = str_replace( $link[2], $this->_linktext($link[2]), $temp);
 				$content = str_replace( $link[0], $temp, $content);
 			}
 
@@ -153,11 +188,6 @@ Class cryptX {
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	/**
-	* Wrap _unicode
-	* @param string $content
-	* @return string
-	*/
 	function _unicode($content)
 	{
 		global $cryptX_var;
@@ -173,9 +203,7 @@ Class cryptX {
 					$crypt .= "&#" . ord ( substr ( $mailto, $i ) ) . ";";
 				}
 				$content = str_replace( $mailto, $crypt, $content);
-				$new_mail = str_replace( "@", $cryptX_var[at], $link[2]);
-				$new_mail = str_replace( ".", $cryptX_var[dot], $new_mail);
-				$content = str_replace( $link[2], $new_mail, $content);
+				$content = str_replace( $link[2], $this->_linktext($link[2]), $content);
 			}
 
 		} // foreach
@@ -205,10 +233,6 @@ Class cryptX {
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	/**
-	* Performs the routines required at plugin installation:
-	* in general introducing the settings array
-	*/
 	function _install() {
 		add_option(
 			'cryptX',
@@ -218,6 +242,7 @@ Class cryptX {
 					'theContent' => 1,
 					'theExcerpt' => 0,
 					'java' => 1,
+					'opt_linktext' => 0,
 				)
 			);
 		}
@@ -300,41 +325,78 @@ Class cryptX {
 <div class="wrap">
 	<h2><?php _e("CryptX Options...",'cryptx'); ?></h2>
 	<form method="post">
-		<blockquote>
-			<table>
-				<tr>
-					<td valign="top"><?php _e("Replacement for '@'",'cryptx'); ?>
-						<input name="cryptX_var[at]" value="<?php echo $cryptX_var[at]; ?>" type="text" /></td>
-				</tr>
-				<tr>
-					<td valign="top"><?php _e("Replacement for '.'",'cryptx'); ?>
-						<input name="cryptX_var[dot]" value="<?php echo $cryptX_var[dot]; ?>" type="text" /></td>
-				</tr>
-				<tr>
-					<td valign="top"><input name="cryptX_var[theContent]" <?php echo ($cryptX_var[theContent]) ? 'checked="checked"' : ''; ?> type="checkbox" />
-						<?php _e("Apply CryptX to the Content",'cryptx'); ?></td>
-				</tr>
-				<tr>
-					<td valign="top"><input name="cryptX_var[theExcerpt]" <?php echo ($cryptX_var[theExcerpt]) ? 'checked="checked"' : ''; ?> type="checkbox" />
-						<?php _e("Apply CryptX to the Excerpt",'cryptx'); ?></td>
-				</tr>
-				<tr>
-					<td valign="top">
-						<input name="cryptX_var[java]" <?php echo ($cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="1" />
-						<?php _e("Use javascript to hide the Email-Link.",'cryptx'); ?><br />
-						<input name="cryptX_var[java]" <?php echo (!$cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="0" />
-						<?php _e("Use Unicode to hide the Email-Link.",'cryptx'); ?>
-					</td>
-				</tr>
-				<tr>
-					<td valign="top"><input name="cryptX_var[autolink]" <?php echo ($cryptX_var[autolink]) ? 'checked="checked"' : ''; ?> type="checkbox" />
-						<?php _e("Add mailto to all unlinked email addresses",'cryptx'); ?></td>
-				</tr>
-				<tr>
-					<td><input type="submit" name="submit" value="Update &raquo;" /></td>
-				</tr>
-			</table>
-		</blockquote>
+	  <blockquote>
+	    <fieldset>
+	    <legend><?php _e("Presentation",'cryptx'); ?></legend>
+	    <table>
+          <tr>
+            <td><input name="cryptX_var[opt_linktext]" type="radio" id="opt_linktext" value="0" <?php echo ($cryptX_var[opt_linktext] == 0) ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;</td>
+            <td nowrap><?php _e("Replacement for '@'",'cryptx'); ?>&nbsp;&nbsp;</td>
+			<td ><input name="cryptX_var[at]" value="<?php echo $cryptX_var[at]; ?>" type="text" /></td>
+          </tr>
+           <tr>
+            <td>&nbsp;</td>
+            <td nowrap><?php _e("Replacement for '.'",'cryptx'); ?>&nbsp;&nbsp;</td>
+			<td><input name="cryptX_var[dot]" value="<?php echo $cryptX_var[dot]; ?>" type="text" /></td>
+          </tr>
+         <tr>
+            <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext2" value="1" <?php echo ($cryptX_var[opt_linktext] == 1) ? 'checked="checked"' : ''; ?>/></td>
+            <td nowrap><?php _e("Text for link",'cryptx'); ?>&nbsp;&nbsp;</td>
+			<td><input name="cryptX_var[alt_linktext]" value="<?php echo $cryptX_var[alt_linktext]; ?>" type="text" /></td>
+          </tr>
+          <tr>
+            <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext3" value="2" <?php echo ($cryptX_var[opt_linktext] == 2) ? 'checked="checked"' : ''; ?>/></td>
+            <td nowrap><?php _e("Image-URL",'cryptx'); ?>&nbsp;&nbsp;</td>
+			<td><input name="cryptX_var[alt_linkimage]" value="<?php echo $cryptX_var[alt_linkimage]; ?>" type="text" /></td>
+          </tr>
+          <tr>
+            <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext4" value="3" <?php echo ($cryptX_var[opt_linktext] == 3) ? 'checked="checked"' : ''; ?>/></td>
+            <td nowrap><?php _e("Select image from folder",'cryptx'); ?>&nbsp;&nbsp;</td>
+			<td><select name="cryptX_var[alt_uploadedimage]">
+			<?php foreach($this->_dirImages() as $image) { ?>
+				<option <?php echo ($cryptX_var[alt_uploadedimage] == $image) ? 'selected' : ''; ?> ><?php echo $image; ?></option>
+			<?php } ?>
+			</select></td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td nowrap colspan="2"><?php _e("Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!",'cryptx'); ?></td>
+          </tr>
+        </table>
+	    </fieldset><br />
+	    <fieldset>
+	    <legend><?php _e("Gerneral",'cryptx'); ?></legend>
+		<table>
+			<tr>
+				<td valign="top"><input name="cryptX_var[theContent]" <?php echo ($cryptX_var[theContent]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;</td>
+				<td nowrap><?php _e("Apply CryptX to the Content",'cryptx'); ?></td>
+			</tr>
+			<tr>
+				<td valign="top"><input name="cryptX_var[theExcerpt]" <?php echo ($cryptX_var[theExcerpt]) ? 'checked="checked"' : ''; ?> type="checkbox" /></td>
+				<td nowrap><?php _e("Apply CryptX to the Excerpt",'cryptx'); ?></td>
+			</tr>
+		</table><br />
+		<table>
+			<tr>
+				<td valign="top">
+					<input name="cryptX_var[java]" <?php echo ($cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="1" /></td>
+				<td nowrap><?php _e("Use javascript to hide the Email-Link.",'cryptx'); ?></td>
+			</tr>
+			<tr>
+				<td valign="top"><input name="cryptX_var[java]" <?php echo (!$cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="0" /></td>
+				 <td nowrap><?php _e("Use Unicode to hide the Email-Link.",'cryptx'); ?>
+				</td>
+			</tr>
+		</table><br />
+		<table>
+			<tr>
+				<td valign="top"><input name="cryptX_var[autolink]" <?php echo ($cryptX_var[autolink]) ? 'checked="checked"' : ''; ?> type="checkbox" /></td>
+				 <td nowrap><?php _e("Add mailto to all unlinked email addresses",'cryptx'); ?></td>
+			</tr>
+		</table>
+	    </fieldset>
+	    <input type="submit" name="submit" value="Update &raquo;" />
+	    </blockquote>
 	</form>
 </div>
 <?php
