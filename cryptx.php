@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 1.6
+Version: 1.7
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -54,6 +54,9 @@ Class cryptX {
 		}
 		if (@$cryptX_var[theExcerpt]) {
 			$this->_filter('the_excerpt');
+		}
+		if (@$cryptX_var[commentText]) {
+			$this->_filter('comment_text');
 		}
 
 		// attach to admin menu
@@ -129,6 +132,10 @@ Class cryptX {
 				$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[alt_uploadedimage] . "\">";
 				break;
 
+			case 4: // text scrambled by antispambot
+				$linktext = antispambot($txt);
+				break;
+
 			default:
 				$linktext = str_replace( "@", $cryptX_var[at], $txt);
 				$linktext = str_replace( ".", $cryptX_var[dot], $linktext);
@@ -198,11 +205,14 @@ Class cryptX {
 
 			if(preg_match('/mailto:(.*)/', $link[1], $mail)) {
 				$mailto = "mailto:" . $mail[1];
+/*
 				$crypt = '';
 				for ($i = 0; $i < strlen( $mailto ); $i++) {
 					$crypt .= "&#" . ord ( substr ( $mailto, $i ) ) . ";";
 				}
 				$content = str_replace( $mailto, $crypt, $content);
+*/
+				$content = str_replace( $mailto, antispambot($mailto), $content);
 				$content = str_replace( $link[2], $this->_linktext($link[2]), $content);
 			}
 
@@ -232,6 +242,7 @@ Class cryptX {
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
 
 	function _install() {
 		add_option(
@@ -362,6 +373,10 @@ Class cryptX {
             <td>&nbsp;</td>
             <td nowrap colspan="2"><?php _e("Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!",'cryptx'); ?></td>
           </tr>
+         <tr>
+            <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext2" value="4" <?php echo ($cryptX_var[opt_linktext] == 4) ? 'checked="checked"' : ''; ?>/></td>
+            <td nowrap colspan="2"><?php _e("Text scrambled by AntiSpamBot (<small>Try it and look at your site and check the html source!</small>)",'cryptx'); ?>&nbsp;&nbsp;</td>
+          </tr>
         </table>
 	    </fieldset><br />
 	    <fieldset>
@@ -374,6 +389,10 @@ Class cryptX {
 			<tr>
 				<td valign="top"><input name="cryptX_var[theExcerpt]" <?php echo ($cryptX_var[theExcerpt]) ? 'checked="checked"' : ''; ?> type="checkbox" /></td>
 				<td nowrap><?php _e("Apply CryptX to the Excerpt",'cryptx'); ?></td>
+			</tr>
+			<tr>
+				<td valign="top"><input name="cryptX_var[commentText]" <?php echo ($cryptX_var[commentText]) ? 'checked="checked"' : ''; ?> type="checkbox" /></td>
+				<td nowrap><?php _e("Apply CryptX to the Comments",'cryptx'); ?></td>
 			</tr>
 		</table><br />
 		<table>

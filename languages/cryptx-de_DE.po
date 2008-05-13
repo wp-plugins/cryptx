@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CryptX 1.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-12 09:39+0100\n"
-"PO-Revision-Date: 2008-04-12 09:42+0100\n"
+"POT-Creation-Date: 2008-04-16 12:40+0100\n"
+"PO-Revision-Date: 2008-04-16 12:41+0100\n"
 "Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
 "Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
 "MIME-Version: 1.0\n"
@@ -12,63 +12,67 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Basepath: D:\\SubVErsion\\Projekte\\CryptX\\trunk\n"
+"X-Poedit-Basepath: D:\\SubVersion\\Projekte\\CryptX\\trunk\n"
 "X-Poedit-KeywordsList: __;_e\n"
-"X-Poedit-SearchPath-0: D:\\SubVErsion\\Projekte\\CryptX\\trunk\n"
+"X-Poedit-SearchPath-0: D:\\SubVersion\\Projekte\\CryptX\\trunk\n"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:326
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:326
 msgid "CryptX Options..."
 msgstr "CryptX Optionen..."
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:330
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:330
 msgid "Presentation"
 msgstr "Darstellung"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:334
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:334
 msgid "Replacement for '@'"
 msgstr "Ersatz f&uuml;r das '@' im Email-Link"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:339
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:339
 msgid "Replacement for '.'"
 msgstr "Ersatz f&uuml;r den '.' im Email-Link"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:344
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:344
 msgid "Text for link"
 msgstr "Text f&uuml;r den Link"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:349
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:349
 msgid "Image-URL"
 msgstr "Bild Url f&uuml;r den Link"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:354
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:354
 msgid "Select image from folder"
 msgstr "W&auml;hlen Sie ein Bild"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:363
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:363
 msgid "Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!"
 msgstr "Speichern Sie ein Bild im ../plugins/cryptx/images Verzeichnis, um es in der Liste ausw&auml;len zu können. Es werden nur .jpg und .gif unterst&uuml;tzt!"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:368
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:368
 msgid "Gerneral"
 msgstr "Allgemeines"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:372
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:372
 msgid "Apply CryptX to the Content"
 msgstr "CryptX auf den Inhalt anwenden"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:376
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:376
 msgid "Apply CryptX to the Excerpt"
 msgstr "CryptX auf die Ausz&uuml;ge anwenden"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:383
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:383
 msgid "Use javascript to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>javascript</b> benutzen"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:387
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:387
 msgid "Use Unicode to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>UNICODE</b> benutzen"
 
-#: D:\SubVErsion\Projekte\CryptX\trunk/cryptx.php:394
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:394
 msgid "Add mailto to all unlinked email addresses"
 msgstr "Füge mailto-Link zu allen nicht verlinkten Email Adressen"
+
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:399
+msgid "Update &raquo;"
+msgstr ""
 

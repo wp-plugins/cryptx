@@ -4,7 +4,7 @@ Donate link: http://weber-nrw.de/
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter
 Requires at least: 2.0
 Tested up to: 2.5
-Stable tag: 1.6
+Stable tag: 1.7
 
 == Description ==
 
@@ -12,9 +12,11 @@ No more SPAM by spiders scanning you site for email adresses. With CryptX you ca
 with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add 
 a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
 
-Thanks to Jeffrey Gould for finding a bug in the preg_match_all pattern fixed in Version 1.4!
-
 [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage")
+
+== Changelog ==
+See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+
 
 == Installation ==
 
