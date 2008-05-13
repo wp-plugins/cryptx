@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: CryptX 1.6\n"
+"Project-Id-Version: CryptX 1.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-16 12:40+0100\n"
-"PO-Revision-Date: 2008-04-16 12:41+0100\n"
+"POT-Creation-Date: 2008-05-13 15:45+0100\n"
+"PO-Revision-Date: 2008-05-13 15:50+0100\n"
 "Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
 "Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
 "MIME-Version: 1.0\n"
@@ -16,63 +16,67 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-SearchPath-0: D:\\SubVersion\\Projekte\\CryptX\\trunk\n"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:326
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:337
 msgid "CryptX Options..."
 msgstr "CryptX Optionen..."
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:330
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:341
 msgid "Presentation"
 msgstr "Darstellung"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:334
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:345
 msgid "Replacement for '@'"
 msgstr "Ersatz f&uuml;r das '@' im Email-Link"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:339
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:350
 msgid "Replacement for '.'"
 msgstr "Ersatz f&uuml;r den '.' im Email-Link"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:344
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:355
 msgid "Text for link"
 msgstr "Text f&uuml;r den Link"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:349
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:360
 msgid "Image-URL"
 msgstr "Bild Url f&uuml;r den Link"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:354
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:365
 msgid "Select image from folder"
 msgstr "W&auml;hlen Sie ein Bild"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:363
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:374
 msgid "Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!"
 msgstr "Speichern Sie ein Bild im ../plugins/cryptx/images Verzeichnis, um es in der Liste ausw&auml;len zu können. Es werden nur .jpg und .gif unterst&uuml;tzt!"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:368
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:378
+msgid "Text scrambled by AntiSpamBot (<small>Try it and look at your site and check the html source!</small>)"
+msgstr "Text mit der Antispambot Funktion von Wordpress verändern (<small>Es sieht zwar aus wie eine normale Email Adresse, aber es ist keine mehr. Seht im Quelltext nach!</small>)"
+
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:383
 msgid "Gerneral"
 msgstr "Allgemeines"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:372
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:387
 msgid "Apply CryptX to the Content"
 msgstr "CryptX auf den Inhalt anwenden"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:376
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:391
 msgid "Apply CryptX to the Excerpt"
 msgstr "CryptX auf die Ausz&uuml;ge anwenden"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:383
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:395
+msgid "Apply CryptX to the Comments"
+msgstr "CryptX auf Kommentare anwenden"
+
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:402
 msgid "Use javascript to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>javascript</b> benutzen"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:387
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:406
 msgid "Use Unicode to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>UNICODE</b> benutzen"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:394
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:413
 msgid "Add mailto to all unlinked email addresses"
 msgstr "Füge mailto-Link zu allen nicht verlinkten Email Adressen"
-
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:399
-msgid "Update &raquo;"
-msgstr ""
 
