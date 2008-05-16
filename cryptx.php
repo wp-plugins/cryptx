@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 1.7
+Version: 1.8
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -124,7 +124,7 @@ Class cryptX {
 				break;
 
 			case 2: // alternative image for mail link
-				$linktext = "<img src=\"" . $cryptX_var[alt_linkimage] . "\" class=\"cryptxImage\" alt=\"email\">";
+				$linktext = "<img src=\"" . $cryptX_var[alt_linkimage] . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[alt_linkimage_title] . "\" title=\"" . $cryptX_var[alt_linkimage_title] . "\">";
 				break;
 
 			case 3: // uploaded image for mail link
@@ -369,6 +369,11 @@ Class cryptX {
 			<?php } ?>
 			</select></td>
           </tr>
+         <tr>
+            <td>&nbsp;</td>
+            <td nowrap><?php _e("Title-Tag for the Image",'cryptx'); ?>&nbsp;&nbsp;</td>
+			<td><input name="cryptX_var[alt_linkimage_title]" value="<?php echo $cryptX_var[alt_linkimage_title]; ?>" type="text" /></td>
+          </tr>
           <tr>
             <td>&nbsp;</td>
             <td nowrap colspan="2"><?php _e("Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!",'cryptx'); ?></td>
@@ -380,7 +385,7 @@ Class cryptX {
         </table>
 	    </fieldset><br />
 	    <fieldset>
-	    <legend><?php _e("Gerneral",'cryptx'); ?></legend>
+	    <legend><?php _e("General",'cryptx'); ?></legend>
 		<table>
 			<tr>
 				<td valign="top"><input name="cryptX_var[theContent]" <?php echo ($cryptX_var[theContent]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;</td>
@@ -414,7 +419,7 @@ Class cryptX {
 			</tr>
 		</table>
 	    </fieldset>
-	    <input type="submit" name="submit" value="Update &raquo;" />
+	    <input type="submit" name="submit" value="<?php _e("Update &raquo;",'cryptx'); ?>" />
 	    </blockquote>
 	</form>
 </div>

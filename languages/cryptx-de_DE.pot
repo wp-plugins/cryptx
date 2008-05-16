@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CryptX 1.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-13 15:45+0100\n"
-"PO-Revision-Date: 2008-05-13 15:49+0100\n"
+"POT-Creation-Date: 2008-05-16 21:18+0100\n"
+"PO-Revision-Date: 2008-05-16 21:18+0100\n"
 "Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
 "Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
 "MIME-Version: 1.0\n"
@@ -45,38 +45,46 @@ msgid "Select image from folder"
 msgstr ""
 
 #: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:374
+msgid "Title-Tag for the Image"
+msgstr ""
+
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:379
 msgid "Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!"
 msgstr ""
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:378
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:383
 msgid "Text scrambled by AntiSpamBot (<small>Try it and look at your site and check the html source!</small>)"
 msgstr ""
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:383
-msgid "Gerneral"
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:388
+msgid "General"
 msgstr ""
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:387
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:392
 msgid "Apply CryptX to the Content"
 msgstr ""
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:391
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:396
 msgid "Apply CryptX to the Excerpt"
 msgstr ""
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:395
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:400
 msgid "Apply CryptX to the Comments"
 msgstr ""
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:402
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:407
 msgid "Use javascript to hide the Email-Link."
 msgstr ""
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:406
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:411
 msgid "Use Unicode to hide the Email-Link."
 msgstr ""
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:413
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:418
 msgid "Add mailto to all unlinked email addresses"
+msgstr ""
+
+#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:422
+msgid "Update &raquo;"
 msgstr ""
 
