@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 1.8
+Version: 1.9
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -129,7 +129,7 @@ Class cryptX {
 
 			case 3: // uploaded image for mail link
 				$imgurl = "/" . PLUGINDIR . "/" . dirname(plugin_basename (__FILE__)) . "/images/" . $cryptX_var[alt_uploadedimage];
-				$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[alt_uploadedimage] . "\">";
+				$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[http_linkimage_title] . "\" title=\"" . $cryptX_var[http_linkimage_title] . "\">";
 				break;
 
 			case 4: // text scrambled by antispambot
@@ -359,6 +359,11 @@ Class cryptX {
             <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext3" value="2" <?php echo ($cryptX_var[opt_linktext] == 2) ? 'checked="checked"' : ''; ?>/></td>
             <td nowrap><?php _e("Image-URL",'cryptx'); ?>&nbsp;&nbsp;</td>
 			<td><input name="cryptX_var[alt_linkimage]" value="<?php echo $cryptX_var[alt_linkimage]; ?>" type="text" /></td>
+          </tr>
+         <tr>
+            <td>&nbsp;</td>
+            <td nowrap><?php _e("Title-Tag for the Image",'cryptx'); ?>&nbsp;&nbsp;</td>
+			<td><input name="cryptX_var[http_linkimage_title]" value="<?php echo $cryptX_var[http_linkimage_title]; ?>" type="text" /></td>
           </tr>
           <tr>
             <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext4" value="3" <?php echo ($cryptX_var[opt_linktext] == 3) ? 'checked="checked"' : ''; ?>/></td>
