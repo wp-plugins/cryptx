@@ -3,8 +3,8 @@ Contributors: Ralf Weber
 Donate link: http://weber-nrw.de/
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter
 Requires at least: 2.0
-Tested up to: 2.5
-Stable tag: 1.9
+Tested up to: 2.7
+Stable tag: 2.0
 
 == Description ==
 

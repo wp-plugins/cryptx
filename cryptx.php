@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 1.9
+Version: 2.0
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -151,9 +151,11 @@ Class cryptX {
 	{
 		$dir = $_SERVER["DOCUMENT_ROOT"].'/'.PLUGINDIR.'/'.dirname(plugin_basename (__FILE__)).'/images';
 		$fh = opendir($dir); //Verzeichnis
+		echo "<!-- ".$fh." -->";
 		$verzeichnisinhalt = array();
 		while (true == ($file = readdir($fh)))
 		{
+		echo "<!-- ".$file." -->";
 			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) //Abfrage nach gültigen Datenformat
 				{
 				$verzeichnisinhalt[] = $file;
@@ -252,6 +254,7 @@ Class cryptX {
 					'dot' => ' [dot] ',
 					'theContent' => 1,
 					'theExcerpt' => 0,
+					'commentText' => 1,
 					'java' => 1,
 					'opt_linktext' => 0,
 				)
@@ -275,159 +278,142 @@ Class cryptX {
 	* Attach the menu page to the `Options` tab
 	*/
 	function _menu() {
-		add_submenu_page('options-general.php',
-			 'CryptX',
-			 'CryptX', 9,
-			 __FILE__,
-			 array($this, '_submenu')
-			);
-		}
+		add_options_page(
+			'CryptX',
+			(version_compare($GLOBALS['wp_version'], '2.6.999', '>') ? '<img src="' .@plugins_url('cryptx/icon.png'). '" width="10" height="10" alt="CryptX Icon" />' : ''). 'CryptX',
+			9,
+			__FILE__,
+			array(
+			$this,
+			'_submenu'
+			)
+		);
+	}
 
 	/**
 	* Handles and renders the menu page
 	*/
 	function _submenu() {
 		global $cryptX_var;
-
-		// sanitize referrer
-		//
-		$_SERVER['HTTP_REFERER'] = preg_replace(
-			'~&saved=.*$~Uis','', $_SERVER['HTTP_REFERER']
-			);
-
-		// information updated ?
-		//
-		if ($_POST['submit']) {
-
-			// save
-			//
-			update_option(
-				'cryptX',
-				$_POST['cryptX_var']
-				);
-
-			die("<script>document.location.href = '{$_SERVER['HTTP_REFERER']}&saved=settings:" . time() . "';</script>");
+		
+		if (isset($_POST) && !empty($_POST)) {
+			if (function_exists('current_user_can') === true && (current_user_can('manage_options') === false || current_user_can('edit_plugins') === false)) {
+				wp_die("You don't have permission to access!");
 			}
-
-		// operation report detected
-		//
-		if (@$_GET['saved']) {
-
-			list($saved, $ts) = explode(':', $_GET['saved']);
-			if (time() - $ts < 10) {
-				echo '<div id="message" class="updated fade"><p><strong>';
-
-				switch ($saved) {
-					case 'settings' :
-						echo 'Settings saved.';
-						break;
-					}
-
-				echo '</strong></p></div>';
-				}
-			}
-
-		// read the settings
-		//
-		//$cryptX = (array) get_option('cryptX');
-
-?>
-<!-- Start Optionen im Adminbereich (xhtml, außerhalb PHP) -->
-<div class="wrap">
-	<h2><?php _e("CryptX Options...",'cryptx'); ?></h2>
-	<form method="post">
-	  <blockquote>
-	    <fieldset>
-	    <legend><?php _e("Presentation",'cryptx'); ?></legend>
-	    <table>
-          <tr>
-            <td><input name="cryptX_var[opt_linktext]" type="radio" id="opt_linktext" value="0" <?php echo ($cryptX_var[opt_linktext] == 0) ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;</td>
-            <td nowrap><?php _e("Replacement for '@'",'cryptx'); ?>&nbsp;&nbsp;</td>
-			<td ><input name="cryptX_var[at]" value="<?php echo $cryptX_var[at]; ?>" type="text" /></td>
-          </tr>
-           <tr>
-            <td>&nbsp;</td>
-            <td nowrap><?php _e("Replacement for '.'",'cryptx'); ?>&nbsp;&nbsp;</td>
-			<td><input name="cryptX_var[dot]" value="<?php echo $cryptX_var[dot]; ?>" type="text" /></td>
-          </tr>
-         <tr>
-            <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext2" value="1" <?php echo ($cryptX_var[opt_linktext] == 1) ? 'checked="checked"' : ''; ?>/></td>
-            <td nowrap><?php _e("Text for link",'cryptx'); ?>&nbsp;&nbsp;</td>
-			<td><input name="cryptX_var[alt_linktext]" value="<?php echo $cryptX_var[alt_linktext]; ?>" type="text" /></td>
-          </tr>
-          <tr>
-            <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext3" value="2" <?php echo ($cryptX_var[opt_linktext] == 2) ? 'checked="checked"' : ''; ?>/></td>
-            <td nowrap><?php _e("Image-URL",'cryptx'); ?>&nbsp;&nbsp;</td>
-			<td><input name="cryptX_var[alt_linkimage]" value="<?php echo $cryptX_var[alt_linkimage]; ?>" type="text" /></td>
-          </tr>
-         <tr>
-            <td>&nbsp;</td>
-            <td nowrap><?php _e("Title-Tag for the Image",'cryptx'); ?>&nbsp;&nbsp;</td>
-			<td><input name="cryptX_var[http_linkimage_title]" value="<?php echo $cryptX_var[http_linkimage_title]; ?>" type="text" /></td>
-          </tr>
-          <tr>
-            <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext4" value="3" <?php echo ($cryptX_var[opt_linktext] == 3) ? 'checked="checked"' : ''; ?>/></td>
-            <td nowrap><?php _e("Select image from folder",'cryptx'); ?>&nbsp;&nbsp;</td>
-			<td><select name="cryptX_var[alt_uploadedimage]">
-			<?php foreach($this->_dirImages() as $image) { ?>
-				<option <?php echo ($cryptX_var[alt_uploadedimage] == $image) ? 'selected' : ''; ?> ><?php echo $image; ?></option>
-			<?php } ?>
-			</select></td>
-          </tr>
-         <tr>
-            <td>&nbsp;</td>
-            <td nowrap><?php _e("Title-Tag for the Image",'cryptx'); ?>&nbsp;&nbsp;</td>
-			<td><input name="cryptX_var[alt_linkimage_title]" value="<?php echo $cryptX_var[alt_linkimage_title]; ?>" type="text" /></td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
-            <td nowrap colspan="2"><?php _e("Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!",'cryptx'); ?></td>
-          </tr>
-         <tr>
-            <td><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext2" value="4" <?php echo ($cryptX_var[opt_linktext] == 4) ? 'checked="checked"' : ''; ?>/></td>
-            <td nowrap colspan="2"><?php _e("Text scrambled by AntiSpamBot (<small>Try it and look at your site and check the html source!</small>)",'cryptx'); ?>&nbsp;&nbsp;</td>
-          </tr>
+			check_admin_referer('cryptX');
+			update_option( 'cryptX', $_POST['cryptX_var']);
+			$cryptX_var = (array) get_option('cryptX'); // reread Options
+			?>
+			<div id="message" class="updated fade">
+				<p><strong><?php _e('Settings saved.') ?></strong></p>
+			</div>
+		<?php } ?>
+		
+		<div class="wrap">
+		<?php if (version_compare($GLOBALS['wp_version'], '2.6.999', '>')) { ?>
+		<div class="icon32" style="background: url(<?php echo @plugins_url('cryptx/icon32.png') ?>) no-repeat"><br /></div>
+		<?php } ?>
+		<h2>CryptX</h2>
+		
+		<form method="post" action="">
+		
+		<?php wp_nonce_field('cryptX') ?>
+		
+		<div id="poststuff" class="ui-sortable">
+		<div id="wp_seo_about_wpseo" class="postbox">
+		
+		<h3><?php _e("Presentation",'cryptx'); ?></h3>
+		
+		<div class="inside">
+	    <table class="form-table">
+			<tr valign="top">
+				<td><input name="cryptX_var[opt_linktext]" type="radio" id="opt_linktext" value="0" <?php echo ($cryptX_var[opt_linktext] == 0) ? 'checked="checked"' : ''; ?> /></td>
+				<th scope="row"><label for="cryptX_var[at]"><?php _e("Replacement for '@'",'cryptx'); ?></label></th>
+				<td><input name="cryptX_var[at]" value="<?php echo $cryptX_var[at]; ?>" type="text" class="regular-text" /></td>
+			</tr>
+			<tr valign="top">
+				<td>&nbsp;</td>
+				<th scope="row"><label for="cryptX_var[dot]"><?php _e("Replacement for '.'",'cryptx'); ?></label></th>
+				<td><input name="cryptX_var[dot]" value="<?php echo $cryptX_var[dot]; ?>" type="text" class="regular-text" /></td>
+			</tr>
+        	<tr valign="top">
+            	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext2" value="1" <?php echo ($cryptX_var[opt_linktext] == 1) ? 'checked="checked"' : ''; ?>/></td>
+            	<th><label for="cryptX_var[alt_linktext]"><?php _e("Text for link",'cryptx'); ?></label></th>
+            	<td><input name="cryptX_var[alt_linktext]" value="<?php echo $cryptX_var[alt_linktext]; ?>" type="text" class="regular-text" /></td>
+          	</tr>
+          	<tr valign="top">
+            	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext3" value="2" <?php echo ($cryptX_var[opt_linktext] == 2) ? 'checked="checked"' : ''; ?>/></td>
+            	<th><label for="cryptX_var[alt_linkimage]"><?php _e("Image-URL",'cryptx'); ?></label></th>
+            	<td><input name="cryptX_var[alt_linkimage]" value="<?php echo $cryptX_var[alt_linkimage]; ?>" type="text" class="regular-text" /></td>
+          	</tr>
+         	<tr valign="top">
+            	<td scope="row">&nbsp;</td>
+            	<th><label for="cryptX_var[http_linkimage_title]"><?php _e("Title-Tag for the Image",'cryptx'); ?></label></th>
+            	<td><input name="cryptX_var[http_linkimage_title]" value="<?php echo $cryptX_var[http_linkimage_title]; ?>" type="text" class="regular-text" /></td>
+          	</tr>
+          	<tr valign="top">
+            	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext4" value="3" <?php echo ($cryptX_var[opt_linktext] == 3) ? 'checked="checked"' : ''; ?>/></td>
+            	<th><label for="cryptX_var[alt_uploadedimage]"><?php _e("Select image from folder",'cryptx'); ?></label></th>
+            	<td><select name="cryptX_var[alt_uploadedimage]" onchange="cryptX_bild_wechsel(this)">
+				<?php foreach($this->_dirImages() as $image) { 
+					$FirstIMG = (!isset($FirstIMG))? plugins_url('cryptx/images/').$image : ($cryptX_var[alt_uploadedimage] == plugins_url('cryptx/images/').$image) ? plugins_url('cryptx/images/').$image : $FirstIMG;
+					?>
+					<option value="<?php echo plugins_url('cryptx/images/').$image; ?>" <?php echo ($cryptX_var[alt_uploadedimage] == plugins_url('cryptx/images/').$image) ? 'selected' : ''; ?> ><?php echo $image; ?></option>
+				<?php } ?>
+				</select>&nbsp;&nbsp;<img src="<?php echo $FirstIMG; ?>" id="cryptXmailTo"></td>
+			</tr>
+			<tr valign="top">
+				<td>&nbsp;</td>
+            	<th><label for="cryptX_var[alt_linkimage_title]"><?php _e("Title-Tag for the Image",'cryptx'); ?></label></th>
+				<td><input name="cryptX_var[alt_linkimage_title]" value="<?php echo $cryptX_var[alt_linkimage_title]; ?>" type="text" class="regular-text" />
+            	<span class="setting-description"><?php _e("Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!",'cryptx'); ?></span></td>
+          	</tr>
+         	<tr valign="top">
+            	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext" value="4" <?php echo ($cryptX_var[opt_linktext] == 4) ? 'checked="checked"' : ''; ?>/></td>
+            	<th colspan="2"><?php _e("Text scrambled by AntiSpamBot (<small>Try it and look at your site and check the html source!</small>)",'cryptx'); ?></th>
+          	</tr>
         </table>
-	    </fieldset><br />
-	    <fieldset>
-	    <legend><?php _e("General",'cryptx'); ?></legend>
-		<table>
-			<tr>
-				<td valign="top"><input name="cryptX_var[theContent]" <?php echo ($cryptX_var[theContent]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;</td>
-				<td nowrap><?php _e("Apply CryptX to the Content",'cryptx'); ?></td>
+		</div>
+		</div>
+
+		<div id="wp_seo_about_wpseo" class="postbox">
+		
+		<h3><?php _e("General",'cryptx'); ?></h3>
+		
+		<div class="inside">
+		<table class="form-table">
+			<tr valign="top">
+				<th scope="row"><?php _e("Apply CryptX to...",'cryptx'); ?></th>
+				<td><input name="cryptX_var[theContent]" <?php echo ($cryptX_var[theContent]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Content",'cryptx'); ?><br/>
+				    <input name="cryptX_var[theExcerpt]" <?php echo ($cryptX_var[theExcerpt]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Excerpt",'cryptx'); ?><br/>
+				    <input name="cryptX_var[commentText]" <?php echo ($cryptX_var[commentText]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Comments",'cryptx'); ?></td>
 			</tr>
-			<tr>
-				<td valign="top"><input name="cryptX_var[theExcerpt]" <?php echo ($cryptX_var[theExcerpt]) ? 'checked="checked"' : ''; ?> type="checkbox" /></td>
-				<td nowrap><?php _e("Apply CryptX to the Excerpt",'cryptx'); ?></td>
+			<tr valign="top">
+				<th scope="row"><?php _e("Type of decryption",'cryptx'); ?></th>
+				<td><input name="cryptX_var[java]" <?php echo ($cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="1" />&nbsp;&nbsp;<?php _e("Use javascript to hide the Email-Link.",'cryptx'); ?><br/>
+				    <input name="cryptX_var[java]" <?php echo (!$cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="0" />&nbsp;&nbsp;<?php _e("Use Unicode to hide the Email-Link.",'cryptx'); ?></td>
 			</tr>
-			<tr>
-				<td valign="top"><input name="cryptX_var[commentText]" <?php echo ($cryptX_var[commentText]) ? 'checked="checked"' : ''; ?> type="checkbox" /></td>
-				<td nowrap><?php _e("Apply CryptX to the Comments",'cryptx'); ?></td>
-			</tr>
-		</table><br />
-		<table>
-			<tr>
-				<td valign="top">
-					<input name="cryptX_var[java]" <?php echo ($cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="1" /></td>
-				<td nowrap><?php _e("Use javascript to hide the Email-Link.",'cryptx'); ?></td>
-			</tr>
-			<tr>
-				<td valign="top"><input name="cryptX_var[java]" <?php echo (!$cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="0" /></td>
-				 <td nowrap><?php _e("Use Unicode to hide the Email-Link.",'cryptx'); ?>
-				</td>
-			</tr>
-		</table><br />
-		<table>
-			<tr>
-				<td valign="top"><input name="cryptX_var[autolink]" <?php echo ($cryptX_var[autolink]) ? 'checked="checked"' : ''; ?> type="checkbox" /></td>
-				 <td nowrap><?php _e("Add mailto to all unlinked email addresses",'cryptx'); ?></td>
+			<tr valign="top">
+				<th scope="row" colspan="2"><input name="cryptX_var[autolink]" <?php echo ($cryptX_var[autolink]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Add mailto to all unlinked email addresses",'cryptx'); ?></th>
 			</tr>
 		</table>
-	    </fieldset>
-	    <input type="submit" name="submit" value="<?php _e("Update &raquo;",'cryptx'); ?>" />
-	    </blockquote>
-	</form>
-</div>
+
+		</div>
+		</div>
+			<p><input type="submit" name="cryptX" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
+		</div>
+		
+		</form>
+	
+		<script type="text/javascript">
+		<!--
+		function cryptX_bild_wechsel(select){ 
+		 document.getElementById("cryptXmailTo").src = select.options[select.options.selectedIndex].value; 
+		 return true; 
+		 }		//-->
+		</script>
+
+		</div>
 <?php
 		}
 
