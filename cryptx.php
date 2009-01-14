@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 1.9
+Version: 2.2
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -99,14 +99,17 @@ Class cryptX {
 
 		if (@$cryptX_var[autolink]) {
 			add_filter($apply,
-			array(&$this, '_autolink'));
+			array(&$this, '_autolink'),
+			9);
 		}
 		if (@$cryptX_var[java]) {
 			add_filter($apply,
-				array(&$this, '_encrypt'));
+				array(&$this, '_encrypt'),
+				11);
 		} else {
 			add_filter($apply,
-				array(&$this, '_unicode'));
+				array(&$this, '_unicode'),
+				11);
 		}
 
 	}
@@ -156,7 +159,7 @@ Class cryptX {
 		while (true == ($file = readdir($fh)))
 		{
 		echo "<!-- ".$file." -->";
-			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) //Abfrage nach gültigen Datenformat
+			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) //Abfrage nach gï¿½ltigen Datenformat
 				{
 				$verzeichnisinhalt[] = $file;
 				}
@@ -170,11 +173,11 @@ Class cryptX {
 	{
 		global $cryptX_var;
 
-		preg_match_all('/<a[^>]*href=["|\'](.*)["|\'].*>(.*)<\/a>/iUs', $content, $links, PREG_SET_ORDER);
+		preg_match_all('/<a (.*?)(href=("|\')(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', $content, $links, PREG_SET_ORDER);
 
 		foreach( $links as $link ) {
 
-			if(preg_match('/mailto:(.*)/', $link[1], $mail)) {
+			if(preg_match('/mailto:(.*)/', $link[4], $mail)) {
 				$crypt = '';
 				$ascii = 0;
 				for ($i = 0; $i < strlen( $mail[1] ); $i++) {
@@ -184,9 +187,8 @@ Class cryptX {
 					}
 					$crypt .= chr($ascii + 1);
 				}
-				$temp = str_replace( $link[1], "javascript:DeCryptX('" . $crypt . "')", $link[0]);
-				$temp = str_replace( $link[2], $this->_linktext($link[2]), $temp);
-				$content = str_replace( $link[0], $temp, $content);
+				$content = str_replace( $link[4], "javascript:DeCryptX('" . $crypt . "')", $content);
+				$content = str_replace( $link[7], $this->_linktext($link[7]), $content);
 			}
 
 		} // foreach
@@ -201,21 +203,14 @@ Class cryptX {
 	{
 		global $cryptX_var;
 
-		preg_match_all('/<a[^>]*href=["|\'](.*)["|\'].*>(.*)<\/a>/iUs', $content, $links, PREG_SET_ORDER);
+		preg_match_all('/<a (.*?)(href=("|\')(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', $content, $links, PREG_SET_ORDER);
 
 		foreach( $links as $link ) {
 
-			if(preg_match('/mailto:(.*)/', $link[1], $mail)) {
+			if(preg_match('/mailto:(.*)/', $link[4], $mail)) {
 				$mailto = "mailto:" . $mail[1];
-/*
-				$crypt = '';
-				for ($i = 0; $i < strlen( $mailto ); $i++) {
-					$crypt .= "&#" . ord ( substr ( $mailto, $i ) ) . ";";
-				}
-				$content = str_replace( $mailto, $crypt, $content);
-*/
 				$content = str_replace( $mailto, antispambot($mailto), $content);
-				$content = str_replace( $link[2], $this->_linktext($link[2]), $content);
+				$content = str_replace( $link[7], $this->_linktext($link[7]), $content);
 			}
 
 		} // foreach
