@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.0
+Version: 2.1
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -99,16 +99,12 @@ Class cryptX {
 
 		if (@$cryptX_var[autolink]) {
 			add_filter($apply,
-			array(&$this, '_autolink'));
+			array(&$this, '_autolink'),
+			9);
 		}
-		if (@$cryptX_var[java]) {
-			add_filter($apply,
-				array(&$this, '_encrypt'));
-		} else {
-			add_filter($apply,
-				array(&$this, '_unicode'));
-		}
-
+		add_filter( $apply,
+					array(&$this, '_findMatches'),
+					11);
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -151,11 +147,9 @@ Class cryptX {
 	{
 		$dir = $_SERVER["DOCUMENT_ROOT"].'/'.PLUGINDIR.'/'.dirname(plugin_basename (__FILE__)).'/images';
 		$fh = opendir($dir); //Verzeichnis
-		echo "<!-- ".$fh." -->";
 		$verzeichnisinhalt = array();
 		while (true == ($file = readdir($fh)))
 		{
-		echo "<!-- ".$file." -->";
 			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) //Abfrage nach gültigen Datenformat
 				{
 				$verzeichnisinhalt[] = $file;
@@ -166,60 +160,49 @@ Class cryptX {
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	function _encrypt($content)
+	function _findMatches($content)
 	{
 		global $cryptX_var;
 
-		preg_match_all('/<a[^>]*href=["|\'](.*)["|\'].*>(.*)<\/a>/iUs', $content, $links, PREG_SET_ORDER);
+		$pattern = '/<a (.*?)(href=("|\')(.*?)("|\')(.*?)|)>(.*?)<\/a>/i'; // Thx to Michael Woehrer (http://sw-guide.de) for this pattern out of his plugin 'Link Indication'
+		$result = preg_replace_callback($pattern,array(get_class($this), '_encrypt'),$content);
 
-		foreach( $links as $link ) {
-
-			if(preg_match('/mailto:(.*)/', $link[1], $mail)) {
-				$crypt = '';
-				$ascii = 0;
-				for ($i = 0; $i < strlen( $mail[1] ); $i++) {
-					$ascii = ord ( substr ( $mail[1], $i ) );
-					if (8364 <= $char) {
-						$ascii = 128;
-					}
-					$crypt .= chr($ascii + 1);
-				}
-				$temp = str_replace( $link[1], "javascript:DeCryptX('" . $crypt . "')", $link[0]);
-				$temp = str_replace( $link[2], $this->_linktext($link[2]), $temp);
-				$content = str_replace( $link[0], $temp, $content);
-			}
-
-		} // foreach
-
-
-		return $content;
+		return $result;
+		
 	}
-
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
-	function _unicode($content)
+	
+	function _encrypt($matches)
 	{
 		global $cryptX_var;
 
-		preg_match_all('/<a[^>]*href=["|\'](.*)["|\'].*>(.*)<\/a>/iUs', $content, $links, PREG_SET_ORDER);
-
-		foreach( $links as $link ) {
-
-			if(preg_match('/mailto:(.*)/', $link[1], $mail)) {
-				$mailto = "mailto:" . $mail[1];
-/*
-				$crypt = '';
-				for ($i = 0; $i < strlen( $mailto ); $i++) {
-					$crypt .= "&#" . ord ( substr ( $mailto, $i ) ) . ";";
-				}
-				$content = str_replace( $mailto, $crypt, $content);
-*/
-				$content = str_replace( $mailto, antispambot($mailto), $content);
-				$content = str_replace( $link[2], $this->_linktext($link[2]), $content);
+		if(preg_match('/mailto:(.*)/', $matches[4], $mail)) { 
+		
+			if (@$cryptX_var[java]) {
+	
+					$crypt = '';
+					$ascii = 0;
+					for ($i = 0; $i < strlen( $mail[1] ); $i++) { 
+						$ascii = ord ( substr ( $mail[1], $i ) ); 
+						if (8364 <= $char) {
+							$ascii = 128;
+						}
+						$crypt .= chr($ascii + 1);
+					}
+					$matches[4] = "javascript:DeCryptX('" . $crypt . "')";
+	
+			} else {
+	
+					$matches[4] = antispambot($matches[4]);
+	
 			}
+		}
+	
+		$matches[7] = $this->_linktext($matches[7]); 
+		$others = $matches[1] . ' ' . $matches[6];
+		$others = eregi_replace('[[:space:]]+', ' ', $others);
+		$others = trim($others);	
 
-		} // foreach
-		return $content;
+		return '<a href="' . $matches[4] . '" ' . $others . '>' . $matches[7] . '</a>';
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -280,7 +263,7 @@ Class cryptX {
 	function _menu() {
 		add_options_page(
 			'CryptX',
-			(version_compare($GLOBALS['wp_version'], '2.6.999', '>') ? '<img src="' .@plugins_url('cryptx/icon.png'). '" width="10" height="10" alt="CryptX Icon" />' : ''). 'CryptX',
+			(version_compare($GLOBALS['wp_version'], '2.6.999', '>') ? '<img src="' .@plugins_url('cryptx/icon.png'). '" width="12" height="10" alt="CryptX Icon" />' : ''). 'CryptX',
 			9,
 			__FILE__,
 			array(
