@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.2
+Version: 2.3
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -100,23 +100,31 @@ Class cryptX {
 		if (@$cryptX_var[autolink]) {
 			add_filter($apply,
 			array(&$this, '_autolink'),
-			9);
+			5);
 		}
 		if (@$cryptX_var[java]) {
 			add_filter($apply,
 				array(&$this, '_encrypt'),
-				11);
+				9);
 		} else {
 			add_filter($apply,
 				array(&$this, '_unicode'),
-				11);
+				9);
 		}
-
+		add_filter($apply, array($this, '_NewLinktext'), 11);
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	function _linktext($txt)
+
+	function _NewLinkText($content)
+	{
+		$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), 'NewLinktext'), $content );
+
+		return $content;	
+	}
+
+	private function NewLinktext($Match)
 	{
 		global $cryptX_var;
 
@@ -136,15 +144,14 @@ Class cryptX {
 				break;
 
 			case 4: // text scrambled by antispambot
-				$linktext = antispambot($txt);
+				$linktext = antispambot($Match[1]);
 				break;
 
 			default:
-				$linktext = str_replace( "@", $cryptX_var[at], $txt);
+				$linktext = str_replace( "@", $cryptX_var[at], $Match[1]);
 				$linktext = str_replace( ".", $cryptX_var[dot], $linktext);
 
 		}
-
 		return $linktext;
 	}
 
@@ -159,7 +166,7 @@ Class cryptX {
 		while (true == ($file = readdir($fh)))
 		{
 		echo "<!-- ".$file." -->";
-			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) //Abfrage nach g�ltigen Datenformat
+			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) 
 				{
 				$verzeichnisinhalt[] = $file;
 				}
@@ -173,7 +180,7 @@ Class cryptX {
 	{
 		global $cryptX_var;
 
-		preg_match_all('/<a (.*?)(href=("|\')(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', $content, $links, PREG_SET_ORDER);
+		preg_match_all('/<a (.*?)(href=("|\')(.*?)("|\')(.*?)|)(>(.*?)<)\/a>/i', $content, $links, PREG_SET_ORDER);
 
 		foreach( $links as $link ) {
 
@@ -188,11 +195,9 @@ Class cryptX {
 					$crypt .= chr($ascii + 1);
 				}
 				$content = str_replace( $link[4], "javascript:DeCryptX('" . $crypt . "')", $content);
-				$content = str_replace( $link[7], $this->_linktext($link[7]), $content);
 			}
 
 		} // foreach
-
 
 		return $content;
 	}
@@ -203,14 +208,13 @@ Class cryptX {
 	{
 		global $cryptX_var;
 
-		preg_match_all('/<a (.*?)(href=("|\')(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', $content, $links, PREG_SET_ORDER);
+		preg_match_all('/<a (.*?)(href=("|\')(.*?)("|\')(.*?)|)(>(.*?)<)\/a>/i', $content, $links, PREG_SET_ORDER);
 
 		foreach( $links as $link ) {
 
 			if(preg_match('/mailto:(.*)/', $link[4], $mail)) {
 				$mailto = "mailto:" . $mail[1];
 				$content = str_replace( $mailto, antispambot($mailto), $content);
-				$content = str_replace( $link[7], $this->_linktext($link[7]), $content);
 			}
 
 		} // foreach
