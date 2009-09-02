@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.3.3
+Version: 2.4.0
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -89,6 +89,17 @@ Class cryptX {
 				);
 			}
 
+		add_action('admin_menu',
+				array(&$this, 'cryptx_meta_box')
+				);
+
+		add_action('wp_insert_post',
+				array(&$this, 'cryptx_insert_post')
+				);
+		add_action('wp_update_post',
+				array(&$this, 'cryptx_insert_post')
+				);
+
 		} // End function
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -96,12 +107,13 @@ Class cryptX {
 	function filter($apply)
 	{
 		global $cryptX_var;
-
+		
 		if (@$cryptX_var[autolink]) {
 			add_filter($apply,
 			array(&$this, 'autolink'),
 			5);
 		}
+
 		add_filter($apply, array($this, 'encryptx'), 11);
 		add_filter($apply, array($this, 'linktext'), 12);
 	}
@@ -111,7 +123,11 @@ Class cryptX {
 
 	function linktext($content)
 	{
-		$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), '_Linktext'), $content );
+		global $post;
+		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
+		if ($cryptxoffmeta == "false") {
+			$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), '_Linktext'), $content );
+		}
 		return $content;	
 	}
 
@@ -150,10 +166,12 @@ Class cryptX {
 	function _dirImages()
 	{
 		$dir = $_SERVER["DOCUMENT_ROOT"].'/'.PLUGINDIR.'/'.dirname(plugin_basename (__FILE__)).'/images';
+		echo "<!-- cryptximgdir: $dir -->";
 		$fh = opendir($dir); //Verzeichnis
 		$verzeichnisinhalt = array();
 		while (true == ($file = readdir($fh)))
 		{
+		echo "<!-- BILD: $file -->";
 			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) 
 				{
 				$verzeichnisinhalt[] = $file;
@@ -166,7 +184,11 @@ Class cryptX {
 
 	function encryptx($content)
 	{
-		$content = preg_replace_callback('/<a (.*?)(href=("|\')mailto:(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', array(get_class($this), 'mailtocrypt'), $content );
+		global $post;
+		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
+		if ($cryptxoffmeta == "false") {
+			$content = preg_replace_callback('/<a (.*?)(href=("|\')mailto:(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', array(get_class($this), 'mailtocrypt'), $content );
+		}
 		return $content;
 	}
 
@@ -245,6 +267,62 @@ Class cryptX {
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+	function cryptx_meta() {
+		global $post;
+		$cryptxoff = false;
+		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
+		if ($cryptxoffmeta == "true") {
+			$cryptxoff = true;
+		}
+		?>
+		<input type="checkbox" name="cryptxoff" <?php if ($cryptxoff) { echo 'checked="checked"'; } ?>/> Disable CryptX 
+		<?php
+	}
+	
+	function cryptx_option() {
+		global $post;
+		$cryptxoff = false;
+		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
+		if ($cryptxoffmeta == "true") {
+			$cryptxoff = true;
+		}
+		if ( current_user_can('edit_posts') ) { ?>
+		<fieldset id="cryptxoption" class="dbx-box">
+		<h3 class="dbx-handle">CryptX</h3>
+		<div class="dbx-content">
+			<input type="checkbox" name="cryptxon" <?php if ($cryptxoff) { echo 'checked="checked"'; } ?>/> CryptX disabled?
+		</div>
+		</fieldset>
+		<?php 
+		}
+	}
+	
+	function cryptx_meta_box() {
+		// Check whether the 2.5 function add_meta_box exists, and if it doesn't use 2.3 functions.
+		if ( function_exists('add_meta_box') ) {
+			add_meta_box('cryptx','CryptX', array(&$this, 'cryptx_meta'),'post');
+			add_meta_box('cryptx','CryptX', array(&$this, 'cryptx_meta'),'page');
+		} else {
+			add_action('dbx_post_sidebar', array(&$this, 'cryptx_option'));
+			add_action('dbx_page_sidebar', array(&$this, 'cryptx_option'));
+		}
+	}
+	
+	//add_action('admin_menu', 'cryptx_meta_box');
+	
+	function cryptx_insert_post($pID) {
+		if (isset($_POST['cryptxoff'])) {
+			add_post_meta($pID,'cryptxoff',"true", true) or update_post_meta($pID, 'cryptxoff', "true");
+		} else {
+			add_post_meta($pID,'cryptxoff',"false", true) or update_post_meta($pID, 'cryptxoff', "false");
+		}
+	}
+	//add_action('wp_insert_post', array(&$this, 'cryptx_insert_post'));
+
+
+
 
 	/**
 	* Attach the menu page to the `Options` tab
