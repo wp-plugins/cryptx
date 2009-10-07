@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.4.2
+Version: 2.4.3
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -106,16 +106,18 @@ Class cryptX {
 
 	function filter($apply)
 	{
-		global $cryptX_var;
-		
+		global $cryptX_var, $shortcode_tags;
+
 		if (@$cryptX_var[autolink]) {
-			add_filter($apply,
-			array(&$this, 'autolink'),
-			5);
+			add_filter($apply, array(&$this, 'autolink'), 5);
 		}
 
-		add_filter($apply, array($this, 'encryptx'), 11);
-		add_filter($apply, array($this, 'linktext'), 12);
+		if (!empty($shortcode_tags) || is_array($shortcode_tags)) {
+			add_filter($apply, array(&$this, 'autolink'), 11);
+		}		
+
+		add_filter($apply, array($this, 'encryptx'), 12);
+		add_filter($apply, array($this, 'linktext'), 13);
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -230,11 +232,15 @@ Class cryptX {
 
 		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
+		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))([\s])/si";
+		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
 		$src[]="/^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(<a[^>]*>)<a[^>]*>/";
 		$src[]="/(<\/A>)<\/A>/i";
 
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>";
+		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
+		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 		$tar[]="<a href=\"mailto:\\0\">\\0</a>";
 		$tar[]="\\1";

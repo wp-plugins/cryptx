@@ -3,8 +3,8 @@ Contributors: Ralf Weber
 Donate link: http://weber-nrw.de/
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter
 Requires at least: 2.0
-Tested up to: 2.8.4
-Stable tag: 2.4.2
+Tested up to: 2.9
+Stable tag: 2.4.3
 
 == Description ==
 
@@ -22,6 +22,8 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 == Changelog ==
 
 See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 2.4.3 =
+* added support for content provided by shortcodes like "WP-Table Reloaded"
 = 2.4.2 =
 * missed to delete my internal Debug function :-(
 = 2.4.1 =
