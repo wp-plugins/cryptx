@@ -172,12 +172,10 @@ Class cryptX {
 	function _dirImages()
 	{
 		$dir = $_SERVER["DOCUMENT_ROOT"].'/'.PLUGINDIR.'/'.dirname(plugin_basename (__FILE__)).'/images';
-		echo "<!-- cryptximgdir: $dir -->";
 		$fh = opendir($dir); //Verzeichnis
 		$verzeichnisinhalt = array();
 		while (true == ($file = readdir($fh)))
 		{
-		echo "<!-- BILD: $file -->";
 			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) 
 				{
 				$verzeichnisinhalt[] = $file;
