@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.3.3
+Version: 2.4.4
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -58,6 +58,9 @@ Class cryptX {
 		if (@$cryptX_var[commentText]) {
 			$this->filter('comment_text');
 		}
+		if (@$cryptX_var[widgetText]) {
+			$this->filter('widget_text');
+		}
 
 		// attach to admin menu
 		//
@@ -89,21 +92,35 @@ Class cryptX {
 				);
 			}
 
+		add_action('admin_menu',
+				array(&$this, 'cryptx_meta_box')
+				);
+
+		add_action('wp_insert_post',
+				array(&$this, 'cryptx_insert_post')
+				);
+		add_action('wp_update_post',
+				array(&$this, 'cryptx_insert_post')
+				);
+
 		} // End function
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 	function filter($apply)
 	{
-		global $cryptX_var;
+		global $cryptX_var, $shortcode_tags;
 
 		if (@$cryptX_var[autolink]) {
-			add_filter($apply,
-			array(&$this, 'autolink'),
-			5);
+			add_filter($apply, array(&$this, 'autolink'), 5);
 		}
-		add_filter($apply, array($this, 'encryptx'), 11);
-		add_filter($apply, array($this, 'linktext'), 12);
+
+		if (!empty($shortcode_tags) || is_array($shortcode_tags)) {
+			add_filter($apply, array(&$this, 'autolink'), 11);
+		}		
+
+		add_filter($apply, array($this, 'encryptx'), 12);
+		add_filter($apply, array($this, 'linktext'), 13);
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -111,7 +128,15 @@ Class cryptX {
 
 	function linktext($content)
 	{
-		$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), '_Linktext'), $content );
+		global $post;
+		$cryptxoff = false;
+		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
+		if ($cryptxoffmeta == "true") {
+			$cryptxoff = true;
+		}
+		if ($cryptxoff == false) {
+			$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), '_Linktext'), $content );
+		}
 		return $content;	
 	}
 
@@ -166,7 +191,15 @@ Class cryptX {
 
 	function encryptx($content)
 	{
-		$content = preg_replace_callback('/<a (.*?)(href=("|\')mailto:(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', array(get_class($this), 'mailtocrypt'), $content );
+		global $post;
+		$cryptxoff = false;
+		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
+		if ($cryptxoffmeta == "true") {
+			$cryptxoff = true;
+		}
+		if ($cryptxoff == false) {
+			$content = preg_replace_callback('/<a (.*?)(href=("|\')mailto:(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', array(get_class($this), 'mailtocrypt'), $content );
+		}
 		return $content;
 	}
 
@@ -200,11 +233,15 @@ Class cryptX {
 
 		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
+		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))([\s])/si";
+		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
 		$src[]="/^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(<a[^>]*>)<a[^>]*>/";
 		$src[]="/(<\/A>)<\/A>/i";
 
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>";
+		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
+		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 		$tar[]="<a href=\"mailto:\\0\">\\0</a>";
 		$tar[]="\\1";
@@ -227,6 +264,7 @@ Class cryptX {
 					'theContent' => 1,
 					'theExcerpt' => 0,
 					'commentText' => 1,
+					'widgetText' => 0,
 					'java' => 1,
 					'opt_linktext' => 0,
 				)
@@ -245,6 +283,62 @@ Class cryptX {
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+	function cryptx_meta() {
+		global $post;
+		$cryptxoff = false;
+		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
+		if ($cryptxoffmeta == "true") {
+			$cryptxoff = true;
+		}
+		?>
+		<input type="checkbox" name="cryptxoff" <?php if ($cryptxoff) { echo 'checked="checked"'; } ?>/> Disable CryptX 
+		<?php
+	}
+	
+	function cryptx_option() {
+		global $post;
+		$cryptxoff = false;
+		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
+		if ($cryptxoffmeta == "true") {
+			$cryptxoff = true;
+		}
+		if ( current_user_can('edit_posts') ) { ?>
+		<fieldset id="cryptxoption" class="dbx-box">
+		<h3 class="dbx-handle">CryptX</h3>
+		<div class="dbx-content">
+			<input type="checkbox" name="cryptxon" <?php if ($cryptxoff) { echo 'checked="checked"'; } ?>/> CryptX disabled?
+		</div>
+		</fieldset>
+		<?php 
+		}
+	}
+	
+	function cryptx_meta_box() {
+		// Check whether the 2.5 function add_meta_box exists, and if it doesn't use 2.3 functions.
+		if ( function_exists('add_meta_box') ) {
+			add_meta_box('cryptx','CryptX', array(&$this, 'cryptx_meta'),'post');
+			add_meta_box('cryptx','CryptX', array(&$this, 'cryptx_meta'),'page');
+		} else {
+			add_action('dbx_post_sidebar', array(&$this, 'cryptx_option'));
+			add_action('dbx_page_sidebar', array(&$this, 'cryptx_option'));
+		}
+	}
+	
+	//add_action('admin_menu', 'cryptx_meta_box');
+	
+	function cryptx_insert_post($pID) {
+		if (isset($_POST['cryptxoff'])) {
+			add_post_meta($pID,'cryptxoff',"true", true) or update_post_meta($pID, 'cryptxoff', "true");
+		} else {
+			add_post_meta($pID,'cryptxoff',"false", true) or update_post_meta($pID, 'cryptxoff', "false");
+		}
+	}
+	//add_action('wp_insert_post', array(&$this, 'cryptx_insert_post'));
+
+
+
 
 	/**
 	* Attach the menu page to the `Options` tab
@@ -292,7 +386,7 @@ Class cryptX {
 		<?php wp_nonce_field('cryptX') ?>
 		
 		<div id="poststuff" class="ui-sortable">
-		<div id="wp_seo_about_wpseo" class="postbox">
+		<div class="postbox">
 		
 		<h3><?php _e("Presentation",'cryptx'); ?></h3>
 		
@@ -347,8 +441,9 @@ Class cryptX {
         </table>
 		</div>
 		</div>
+			<p><input type="submit" name="cryptX" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
 
-		<div id="wp_seo_about_wpseo" class="postbox">
+		<div class="postbox">
 		
 		<h3><?php _e("General",'cryptx'); ?></h3>
 		
@@ -356,9 +451,10 @@ Class cryptX {
 		<table class="form-table">
 			<tr valign="top">
 				<th scope="row"><?php _e("Apply CryptX to...",'cryptx'); ?></th>
-				<td><input name="cryptX_var[theContent]" <?php echo ($cryptX_var[theContent]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Content",'cryptx'); ?><br/>
+				<td><input name="cryptX_var[theContent]" <?php echo ($cryptX_var[theContent]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Content",'cryptx'); ?> <?php _e("(<i>this can be disabled per Post by an Option</i>)",'cryptx'); ?><br/>
 				    <input name="cryptX_var[theExcerpt]" <?php echo ($cryptX_var[theExcerpt]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Excerpt",'cryptx'); ?><br/>
-				    <input name="cryptX_var[commentText]" <?php echo ($cryptX_var[commentText]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Comments",'cryptx'); ?></td>
+				    <input name="cryptX_var[commentText]" <?php echo ($cryptX_var[commentText]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Comments",'cryptx'); ?><br/>
+				    <input name="cryptX_var[widgetText]" <?php echo ($cryptX_var[widgetText]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Widgets",'cryptx'); ?> <?php _e("(<i>works only on all widgets, not on a single widget</i>!)",'cryptx'); ?></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><?php _e("Type of decryption",'cryptx'); ?></th>
@@ -373,6 +469,63 @@ Class cryptX {
 		</div>
 		</div>
 			<p><input type="submit" name="cryptX" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
+
+		<div class="postbox">
+		
+		<h3><?php _e("How to use CryptX in your Template",'cryptx'); ?></h3>
+		
+		<div class="inside">
+		<table class="form-table">
+			<tr>
+				<td>In your Template you can use the following function to encrypt a email address:
+				<p style="border:1px solid #000; background-color: #e9e9e9;padding: 10px;">
+				<i>
+				&lt;?php <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;    $mail="name@example.com"; <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;    $text="Contact"; <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;    $css ="email"; <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;    if (function_exists('cryptx')) { <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        cryptx($mail, $text, $css, 1); <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;    } else { <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        echo sprintf('&lt;a href="mailto:%s" class="%s"&gt;%s&lt;/a&gt;', $mail, $css, ($text != "" ? $text : $mail)); <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;    } <br/>
+				?&gt;
+				</i></p>
+				<ol><li>parameter is the email address.</li>
+				<li>parameter is the linktext. If none given the email address is used.</li>
+				<li>parameter is a css class added to the link.</li>
+				<li>parameter is 1 for echo the encrypted email address or 0 to return the redult to a variable.</li></ol></td>
+			</tr>
+		</table>
+
+		</div>
+		</div>
+
+		<div class="postbox">
+		
+		<h3><?php _e("Information",'cryptx'); ?></h3>
+		
+		<div class="inside">
+		<table class="form-table">
+			<tr>
+				<td><?php
+				$data = get_plugin_data(__FILE__);
+				echo sprintf(
+					'%1$s: %2$s | %3$s: %4$s | %5$s: <a href="http://weber-nrw.de" target="_blank">Ralf Weber</a> | <a href="http://twitter.com/Weber_NRW" target="_blank">%6$s</a><br />',
+					__('Plugin'),
+					'CryptX',
+					__('Version'),
+					$data['Version'],
+					__('Author'),
+					__('Follow on Twitter', 'cryptx'));
+				?>
+				</td>
+			</tr>
+		</table>
+
+		</div>
+		</div>
+
 		</div>
 		
 		</form>

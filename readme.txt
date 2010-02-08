@@ -3,8 +3,8 @@ Contributors: Ralf Weber
 Donate link: http://weber-nrw.de/
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter
 Requires at least: 2.0
-Tested up to: 2.7.1
-Stable tag: 2.3.3
+Tested up to: 3.0-alpha
+Stable tag: 2.4.4
 
 == Description ==
 
@@ -14,9 +14,25 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 
 [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage")
 
-== Changelog ==
-See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+== Screenshots ==
 
+1. Disable Option box
+2. Plugin settings
+
+== Changelog ==
+
+See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 2.4.4 =
+* added support for widgets
+* added information how to implement CryptX in your template
+= 2.4.3 =
+* added support for content provided by shortcodes like "WP-Table Reloaded"
+= 2.4.2 =
+* missed to delete my internal Debug function :-(
+= 2.4.1 =
+* Changed routine in the new Option if Custom Field not exist.
+= 2.4.0 =
+* Add Option to disable CryptX on single post/page
 
 == Installation ==
 
