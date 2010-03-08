@@ -4,7 +4,7 @@ Donate link: http://weber-nrw.de/
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail
 Requires at least: 2.0
 Tested up to: 3.0-alpha
-Stable tag: 2.4.5
+Stable tag: 2.4.6
 
 == Description ==
 
@@ -22,6 +22,8 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 == Changelog ==
 
 See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 2.4.6 =
+* added support for ssl-secured sites
 = 2.4.5 =
 * added support for mailto links without email adress, like a link from "Sociable"
 = 2.4.4 =
