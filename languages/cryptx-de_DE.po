@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: CryptX 1.7\n"
+"Project-Id-Version: CryptX 2.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-16 21:18+0100\n"
-"PO-Revision-Date: 2008-05-16 21:19+0100\n"
+"POT-Creation-Date: 2010-04-08 21:08+0100\n"
+"PO-Revision-Date: 2010-04-08 21:08+0100\n"
 "Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
 "Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
 "MIME-Version: 1.0\n"
@@ -12,80 +12,163 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Basepath: D:\\SubVersion\\Projekte\\CryptX\\trunk\n"
+"X-Poedit-Basepath: ./\n"
 "X-Poedit-KeywordsList: __;_e\n"
-"X-Poedit-SearchPath-0: D:\\SubVersion\\Projekte\\CryptX\\trunk\n"
+"X-Poedit-SearchPath-0: /Users/ralf/SVN/CryptX/trunk\n"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:337
-msgid "CryptX Options..."
-msgstr "CryptX Optionen..."
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:389
+msgid "Settings saved."
+msgstr "Einstellungen speichern."
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:341
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:406
 msgid "Presentation"
 msgstr "Darstellung"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:345
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:412
 msgid "Replacement for '@'"
 msgstr "Ersatz f&uuml;r das '@' im Email-Link"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:350
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:417
 msgid "Replacement for '.'"
 msgstr "Ersatz f&uuml;r den '.' im Email-Link"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:355
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:422
 msgid "Text for link"
 msgstr "Text f&uuml;r den Link"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:360
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:427
 msgid "Image-URL"
 msgstr "Bild Url f&uuml;r den Link"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:365
-msgid "Select image from folder"
-msgstr "W&auml;hlen Sie ein Bild"
-
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:374
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:432
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:449
 msgid "Title-Tag for the Image"
 msgstr "Title-Tag für das Bild"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:379
-msgid "Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!"
-msgstr "Speichern Sie ein Bild im ../plugins/cryptx/images Verzeichnis, um es in der Liste ausw&auml;len zu können. Es werden nur .jpg und .gif unterst&uuml;tzt!"
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:437
+msgid "Select image from folder"
+msgstr "W&auml;hlen Sie ein Bild"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:383
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:445
+msgid "Upload your favorite email-image to "
+msgstr "Lade Dein bevorzugtes Email Bild nach "
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:445
+msgid ". Only .jpg and .gif Supported!"
+msgstr " hoch. Nur .jpg und .gif wird unterstützt!"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:454
 msgid "Text scrambled by AntiSpamBot (<small>Try it and look at your site and check the html source!</small>)"
-msgstr "Text mit der Antispambot Funktion von Wordpress verändern (<small>Es sieht zwar aus wie eine normale Email Adresse, aber es ist keine mehr. Seht im Quelltext nach!</small>)"
+msgstr "Text mit der Antispambot Funktion von Wordpress ver&auml;ndern (<small>Es sieht zwar aus wie eine normale Email Adresse, aber es ist keine mehr. Seht im Quelltext nach!</small>)"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:388
-#, fuzzy
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:459
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:491
+msgid "Save Changes"
+msgstr "%Auml;nderungen speichern"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:463
 msgid "General"
 msgstr "Allgemeines"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:392
-msgid "Apply CryptX to the Content"
-msgstr "CryptX auf den Inhalt anwenden"
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:468
+msgid "Apply CryptX to..."
+msgstr "CryptX anwenden auf..."
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:396
-msgid "Apply CryptX to the Excerpt"
-msgstr "CryptX auf die Ausz&uuml;ge anwenden"
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:469
+msgid "Content"
+msgstr "Inhalt"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:400
-msgid "Apply CryptX to the Comments"
-msgstr "CryptX auf Kommentare anwenden"
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:469
+msgid "(<i>this can be disabled per Post by an Option</i>)"
+msgstr "(<i>kann bei jedem Artikel/Seite seperat abgeschaltet werden</i>)"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:407
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:470
+msgid "Excerpt"
+msgstr "Auszug"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:471
+msgid "Comments"
+msgstr "Kommentaren"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:472
+msgid "Widgets"
+msgstr "Widgets"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:472
+msgid "(<i>works only on all widgets, not on a single widget</i>!)"
+msgstr "(<i>betrifft ALLE Widgets</i>!)"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:475
+msgid "Excluded ID's..."
+msgstr "Ausgenommene ID's..."
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:477
+msgid "Enter all Page/Post ID's to exclude from CryptX as comma seperated list."
+msgstr "Trage hier alle Seiten/Artikel ID's durch Komma getrennt ein die von CryptX ausgenommen werden sollen."
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:480
+msgid "Type of decryption"
+msgstr "Art der Verschl&uuml;sselung"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:481
 msgid "Use javascript to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>javascript</b> benutzen"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:411
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:482
 msgid "Use Unicode to hide the Email-Link."
 msgstr "Zum verstecken der Emails <b>UNICODE</b> benutzen"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:418
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:485
 msgid "Add mailto to all unlinked email addresses"
 msgstr "Füge mailto-Link zu allen nicht verlinkten Email Adressen"
 
-#: D:\SubVersion\Projekte\CryptX\trunk/cryptx.php:422
-msgid "Update &raquo;"
-msgstr "Aktualisieren &raquo;"
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:495
+msgid "How to use CryptX in your Template"
+msgstr "Wie bindest Du CryptX in Dein Template ein"
 
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:526
+msgid "Information"
+msgstr "Information"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:535
+msgid "Plugin"
+msgstr "Plugin"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:537
+msgid "Version"
+msgstr "Version"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:539
+msgid "Author"
+msgstr "Autor"
+
+#: /Users/ralf/SVN/CryptX/trunk/cryptx.php:540
+msgid "Follow on Twitter"
+msgstr "Folge mir auf Twitter"
+
+#~ msgid "CryptX Options..."
+#~ msgstr "CryptX Optionen..."
+
+#~ msgid "Apply CryptX to the Content"
+#~ msgstr "CryptX auf den Inhalt anwenden"
+
+#~ msgid "Apply CryptX to the Excerpt"
+#~ msgstr "CryptX auf die Ausz&uuml;ge anwenden"
+
+#~ msgid ""
+#~ "Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg "
+#~ "and .gif Supported!"
+#~ msgstr ""
+#~ "Speichern Sie ein Bild im ../plugins/cryptx/images Verzeichnis, um es in "
+#~ "der Liste ausw&auml;len zu können. Es werden nur .jpg und .gif "
+#~ "unterst&uuml;tzt!"
+
+#, fuzzy
+#~ msgid "Gerneral"
+#~ msgstr "Allgemeines"
+
+#~ msgid "Apply CryptX to the Comments"
+#~ msgstr "CryptX auf Kommentare anwenden"
+
+#~ msgid "Update &raquo;"
+#~ msgstr "Aktualisieren &raquo;"

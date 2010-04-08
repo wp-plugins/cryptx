@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.4.6
+Version: 2.5.0
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 */
@@ -94,14 +94,14 @@ Class cryptX {
 
 		add_action('admin_menu',
 				array(&$this, 'cryptx_meta_box')
-				);
+				); 
 
 		add_action('wp_insert_post',
 				array(&$this, 'cryptx_insert_post')
 				);
 		add_action('wp_update_post',
 				array(&$this, 'cryptx_insert_post')
-				);
+				); 
 
 		} // End function
 
@@ -125,7 +125,14 @@ Class cryptX {
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-
+	function _excluded($ID) {
+		global $cryptX_var;
+		$return = false;
+		$exIDs = explode(",", $cryptX_var[excludedIDs]);
+		if(array_search($ID, $exIDs) >0 ) $return = true;
+		return $return;
+	}
+	
 	function linktext($content)
 	{
 		global $post;
@@ -134,7 +141,7 @@ Class cryptX {
 		if ($cryptxoffmeta == "true") {
 			$cryptxoff = true;
 		}
-		if ($cryptxoff == false) {
+		if (!$this->_excluded($post->ID)) {
 			$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), '_Linktext'), $content );
 		}
 		return $content;	
@@ -154,7 +161,8 @@ Class cryptX {
 				break;
 
 			case 3: // uploaded image for mail link
-				$imgurl = "/" . PLUGINDIR . "/" . dirname(plugin_basename (__FILE__)) . "/images/" . $cryptX_var[alt_uploadedimage];
+//				$imgurl = "/" . PLUGINDIR . "/" . dirname(plugin_basename (__FILE__)) . "/images/" . $cryptX_var[alt_uploadedimage];
+				$imgurl = $cryptX_var[alt_uploadedimage];
 				$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[http_linkimage_title] . "\" title=\"" . $cryptX_var[http_linkimage_title] . "\">";
 				break;
 
@@ -174,7 +182,7 @@ Class cryptX {
 
 	function _dirImages()
 	{
-		$dir = $_SERVER["DOCUMENT_ROOT"].'/'.PLUGINDIR.'/'.dirname(plugin_basename (__FILE__)).'/images';
+		$dir = plugin_dir_path( __FILE__ ).'images';
 		$fh = opendir($dir); //Verzeichnis
 		$verzeichnisinhalt = array();
 		while (true == ($file = readdir($fh)))
@@ -192,12 +200,8 @@ Class cryptX {
 	function encryptx($content)
 	{
 		global $post;
-		$cryptxoff = false;
-		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
-		if ($cryptxoffmeta == "true") {
-			$cryptxoff = true;
-		}
-		if ($cryptxoff == false) {
+		
+		if (!$this->_excluded($post->ID)) {
 			$content = preg_replace_callback('/<a (.*?)(href=("|\')mailto:(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', array(get_class($this), 'mailtocrypt'), $content );
 		}
 		return $content;
@@ -258,6 +262,7 @@ Class cryptX {
 
 
 	function install() {
+		global $cryptX_var, $wpdb;
 		add_option(
 			'cryptX',
 				array(
@@ -269,9 +274,23 @@ Class cryptX {
 					'widgetText' => 0,
 					'java' => 1,
 					'opt_linktext' => 0,
+					'autolink' => 1,
+					'excludedIDs' => '',
 				)
 			);
+		$cryptX_var = (array) get_option('cryptX'); // reread Options
+		if ($cryptX_var[excludedIDs] == "") {
+			$excludes = $wpdb->get_results("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'cryptxoff' AND meta_value = 'true'");
+			foreach ($excludes as $exclude) {
+				$tmp[] = $exclude->post_id;
+			}
+			sort($tmp);
+			$cryptX_var[excludedIDs] = implode(",", $tmp);
+			update_option( 'cryptX', $cryptX_var);
+			$cryptX_var = (array) get_option('cryptX'); // reread Options			
+			$wpdb->query("DELETE FROM $wpdb->postmeta WHERE meta_key = 'cryptxoff'");
 		}
+	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
@@ -289,28 +308,18 @@ Class cryptX {
 
 	function cryptx_meta() {
 		global $post;
-		$cryptxoff = false;
-		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
-		if ($cryptxoffmeta == "true") {
-			$cryptxoff = true;
-		}
 		?>
-		<input type="checkbox" name="cryptxoff" <?php if ($cryptxoff) { echo 'checked="checked"'; } ?>/> Disable CryptX 
+		<input type="checkbox" name="cryptxoff" <?php if ($this->_excluded($post->ID)) { echo 'checked="checked"'; } ?>/> Disable CryptX 
 		<?php
 	}
 	
 	function cryptx_option() {
 		global $post;
-		$cryptxoff = false;
-		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
-		if ($cryptxoffmeta == "true") {
-			$cryptxoff = true;
-		}
 		if ( current_user_can('edit_posts') ) { ?>
 		<fieldset id="cryptxoption" class="dbx-box">
 		<h3 class="dbx-handle">CryptX</h3>
 		<div class="dbx-content">
-			<input type="checkbox" name="cryptxon" <?php if ($cryptxoff) { echo 'checked="checked"'; } ?>/> CryptX disabled?
+			<input type="checkbox" name="cryptxon" <?php if ($this->_excluded($post->ID)) { echo 'checked="checked"'; } ?>/> CryptX disabled?
 		</div>
 		</fieldset>
 		<?php 
@@ -331,16 +340,20 @@ Class cryptX {
 	//add_action('admin_menu', 'cryptx_meta_box');
 	
 	function cryptx_insert_post($pID) {
-		if (isset($_POST['cryptxoff'])) {
-			add_post_meta($pID,'cryptxoff',"true", true) or update_post_meta($pID, 'cryptxoff', "true");
-		} else {
-			add_post_meta($pID,'cryptxoff',"false", true) or update_post_meta($pID, 'cryptxoff', "false");
+		global $cryptX_var, $post;
+		$b = explode(",", $cryptX_var[excludedIDs]);
+		foreach($b as $x=>$y) {
+			if($y == $pID) {
+				unset($b[$x]);
+				break;
+			}
 		}
+		if (isset($_POST['cryptxoff'])) $b[] = $pID;
+		sort($b);
+		$cryptX_var[excludedIDs] = implode(",", $b);
+		update_option( 'cryptX', $cryptX_var);
+		$cryptX_var = (array) get_option('cryptX'); // reread Options
 	}
-	//add_action('wp_insert_post', array(&$this, 'cryptx_insert_post'));
-
-
-
 
 	/**
 	* Attach the menu page to the `Options` tab
@@ -353,7 +366,7 @@ Class cryptX {
 			__FILE__,
 			array(
 			$this,
-			'_submenu'
+			'_submenu',
 			)
 		);
 	}
@@ -428,13 +441,13 @@ Class cryptX {
 					?>
 					<option value="<?php echo plugins_url('cryptx/images/').$image; ?>" <?php echo ($cryptX_var[alt_uploadedimage] == plugins_url('cryptx/images/').$image) ? 'selected' : ''; ?> ><?php echo $image; ?></option>
 				<?php } ?>
-				</select>&nbsp;&nbsp;<img src="<?php echo $FirstIMG; ?>" id="cryptXmailTo"></td>
+				</select>&nbsp;&nbsp;<img src="<?php echo $FirstIMG; ?>" id="cryptXmailTo"><br/>
+				<span class="setting-description"><?php _e("Upload your favorite email-image to ",'cryptx'); echo "'".plugin_dir_path( __FILE__ )."images'"; _e(". Only .jpg and .gif Supported!",'cryptx'); ?></span></td>
 			</tr>
 			<tr valign="top">
 				<td>&nbsp;</td>
             	<th><label for="cryptX_var[alt_linkimage_title]"><?php _e("Title-Tag for the Image",'cryptx'); ?></label></th>
-				<td><input name="cryptX_var[alt_linkimage_title]" value="<?php echo $cryptX_var[alt_linkimage_title]; ?>" type="text" class="regular-text" />
-            	<span class="setting-description"><?php _e("Upload your favorite email-image to ../plugins/cryptx/images. Only .jpg and .gif Supported!",'cryptx'); ?></span></td>
+				<td><input name="cryptX_var[alt_linkimage_title]" value="<?php echo $cryptX_var[alt_linkimage_title]; ?>" type="text" class="regular-text" /></td>
           	</tr>
          	<tr valign="top">
             	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext" value="4" <?php echo ($cryptX_var[opt_linktext] == 4) ? 'checked="checked"' : ''; ?>/></td>
@@ -457,6 +470,11 @@ Class cryptX {
 				    <input name="cryptX_var[theExcerpt]" <?php echo ($cryptX_var[theExcerpt]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Excerpt",'cryptx'); ?><br/>
 				    <input name="cryptX_var[commentText]" <?php echo ($cryptX_var[commentText]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Comments",'cryptx'); ?><br/>
 				    <input name="cryptX_var[widgetText]" <?php echo ($cryptX_var[widgetText]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Widgets",'cryptx'); ?> <?php _e("(<i>works only on all widgets, not on a single widget</i>!)",'cryptx'); ?></td>
+			</tr>
+			<tr valign="top">
+				<th scope="row"><?php _e("Excluded ID's...",'cryptx'); ?></th>
+				<td><input name="cryptX_var[excludedIDs]" value="<?php echo $cryptX_var[excludedIDs]; ?>" type="text" class="regular-text" />
+				<br/><span class="setting-description"><?php _e("Enter all Page/Post ID's to exclude from CryptX as comma seperated list.",'cryptx'); ?></span></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><?php _e("Type of decryption",'cryptx'); ?></th>
