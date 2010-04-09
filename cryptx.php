@@ -29,8 +29,7 @@ define( 'CRYPTX_BASENAME', plugin_basename( __FILE__ ) );
 define( 'CRYPTX_BASEFOLDER', plugin_basename( dirname( __FILE__ ) ) );
 define( 'CRYPTX_FILENAME', str_replace( CRYPTX_BASEFOLDER.'/', '', plugin_basename(__FILE__) ) );
 
-
-load_plugin_textdomain('cryptx', CRYPTX_BASEFOLDER . '/languages');
+load_plugin_textdomain('cryptx', sprintf('%s/cryptx/languages', PLUGINDIR ));
 
 $cryptX_var = (array) get_option('cryptX');
 
@@ -466,7 +465,7 @@ Class cryptX {
 					<option value="<?php echo plugins_url('cryptx/images/').$image; ?>" <?php echo ($cryptX_var[alt_uploadedimage] == plugins_url('cryptx/images/').$image) ? 'selected' : ''; ?> ><?php echo $image; ?></option>
 				<?php } ?>
 				</select>&nbsp;&nbsp;<img src="<?php echo $FirstIMG; ?>" id="cryptXmailTo"><br/>
-				<span class="setting-description"><?php _e("Upload your favorite email-image to ",'cryptx'); echo "'".plugin_dir_path( __FILE__ )."images'"; _e(". Only .jpg and .gif Supported!",'cryptx'); ?></span></td>
+				<span class="setting-description"><?php echo sprintf( __("Upload your favorite email-image to '%s'. Only .jpg and .gif Supported!",'cryptx'), plugin_dir_path( __FILE__ ) ); ?></span></td>
 			</tr>
 			<tr valign="top">
 				<td>&nbsp;</td>
