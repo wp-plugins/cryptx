@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: CryptX 2.5.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-04-09 13:41+0100\n"
-"PO-Revision-Date: 2010-04-09 13:42+0100\n"
+"PO-Revision-Date: 2010-04-09 13:50+0100\n"
 "Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
 "Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
 "MIME-Version: 1.0\n"
@@ -61,7 +61,7 @@ msgstr "W&auml;hlen Sie ein Bild"
 #: /Users/ralf/SVN/CryptX/trunk/cryptx.php:468
 #, php-format
 msgid "Upload your favorite email-image to '%s'. Only .jpg and .gif Supported!"
-msgstr "Speichern Sie ein Bild im Verzeichnis '%s', um es in der Liste ausw&auml;len zu können. Es werden nur .jpg und .gif unterst&uuml;tzt!"
+msgstr "Speichern Sie ein Bild im Verzeichnis '%s', um es in der Liste ausw&auml;hlen zu k&ouml;nnen. Es werden nur .jpg und .gif unterst&uuml;tzt!"
 
 #: /Users/ralf/SVN/CryptX/trunk/cryptx.php:477
 msgid "Text scrambled by AntiSpamBot (<small>Try it and look at your site and check the html source!</small>)"
