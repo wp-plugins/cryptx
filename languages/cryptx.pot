@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CryptX 2.5.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/cryptx\n"
-"POT-Creation-Date: 2010-04-09 10:46+0000\n"
+"POT-Creation-Date: 2010-04-09 11:43+0000\n"
 "PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,146 +16,143 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: cryptx.php:126
+#: cryptx.php:125
 msgid "Settings"
 msgstr ""
 
-#: cryptx.php:127 cryptx.php:566
+#: cryptx.php:126 cryptx.php:565
 msgid "Donate"
 msgstr ""
 
-#: cryptx.php:413
+#: cryptx.php:412
 msgid "Settings saved."
 msgstr ""
 
-#: cryptx.php:430
+#: cryptx.php:429
 msgid "Presentation"
 msgstr ""
 
-#: cryptx.php:436
+#: cryptx.php:435
 msgid "Replacement for '@'"
 msgstr ""
 
-#: cryptx.php:441
+#: cryptx.php:440
 msgid "Replacement for '.'"
 msgstr ""
 
-#: cryptx.php:446
+#: cryptx.php:445
 msgid "Text for link"
 msgstr ""
 
-#: cryptx.php:451
+#: cryptx.php:450
 msgid "Image-URL"
 msgstr ""
 
-#: cryptx.php:456 cryptx.php:473
+#: cryptx.php:455 cryptx.php:472
 msgid "Title-Tag for the Image"
 msgstr ""
 
-#: cryptx.php:461
+#: cryptx.php:460
 msgid "Select image from folder"
 msgstr ""
 
-#: cryptx.php:469
-msgid "Upload your favorite email-image to "
+#: cryptx.php:468
+#, php-format
+msgid "Upload your favorite email-image to '%s'. Only .jpg and .gif Supported!"
 msgstr ""
 
-#: cryptx.php:469
-msgid ". Only .jpg and .gif Supported!"
-msgstr ""
-
-#: cryptx.php:478
+#: cryptx.php:477
 msgid ""
 "Text scrambled by AntiSpamBot (<small>Try it and look at your site and check "
 "the html source!</small>)"
 msgstr ""
 
-#: cryptx.php:483 cryptx.php:516
+#: cryptx.php:482 cryptx.php:515
 msgid "Save Changes"
 msgstr ""
 
-#: cryptx.php:487
+#: cryptx.php:486
 msgid "General"
 msgstr ""
 
-#: cryptx.php:492
+#: cryptx.php:491
 msgid "Apply CryptX to..."
 msgstr ""
 
-#: cryptx.php:493
+#: cryptx.php:492
 msgid "Content"
 msgstr ""
 
-#: cryptx.php:493
+#: cryptx.php:492
 msgid "(<i>this can be disabled per Post by an Option</i>)"
 msgstr ""
 
-#: cryptx.php:494
+#: cryptx.php:493
 msgid "Excerpt"
 msgstr ""
 
-#: cryptx.php:495
+#: cryptx.php:494
 msgid "Comments"
 msgstr ""
 
-#: cryptx.php:496
+#: cryptx.php:495
 msgid "Widgets"
 msgstr ""
 
-#: cryptx.php:496
+#: cryptx.php:495
 msgid "(<i>works only on all widgets, not on a single widget</i>!)"
 msgstr ""
 
-#: cryptx.php:499
+#: cryptx.php:498
 msgid "Excluded ID's..."
 msgstr ""
 
-#: cryptx.php:501
+#: cryptx.php:500
 msgid ""
 "Enter all Page/Post ID's to exclude from CryptX as comma seperated list."
 msgstr ""
 
-#: cryptx.php:502
+#: cryptx.php:501
 msgid "Enable the CryptX Widget on editing a post or page."
 msgstr ""
 
-#: cryptx.php:505
+#: cryptx.php:504
 msgid "Type of decryption"
 msgstr ""
 
-#: cryptx.php:506
+#: cryptx.php:505
 msgid "Use javascript to hide the Email-Link."
 msgstr ""
 
-#: cryptx.php:507
+#: cryptx.php:506
 msgid "Use Unicode to hide the Email-Link."
 msgstr ""
 
-#: cryptx.php:510
+#: cryptx.php:509
 msgid "Add mailto to all unlinked email addresses"
 msgstr ""
 
-#: cryptx.php:520
+#: cryptx.php:519
 msgid "How to use CryptX in your Template"
 msgstr ""
 
-#: cryptx.php:551
+#: cryptx.php:550
 msgid "Information"
 msgstr ""
 
-#: cryptx.php:560
+#: cryptx.php:559
 msgid "Plugin"
 msgstr ""
 
-#: cryptx.php:562
+#: cryptx.php:561
 msgid "Version"
 msgstr ""
 
-#: cryptx.php:564
+#: cryptx.php:563
 msgid "Author"
 msgstr ""
 
-#: cryptx.php:565
+#: cryptx.php:564
 msgid "Follow on Twitter"
 msgstr ""
 
