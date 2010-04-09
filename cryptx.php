@@ -3,9 +3,10 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.5.0
+Version: 2.5.1
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
 */
 
 /////////////////////////////////////////////////////////////////////////////
@@ -23,8 +24,13 @@ if (!defined('ABSPATH')) {
 if (!class_exists('cryptX')) {
 
 /////////////////////////////////////////////////////////////////////////////
+// plugin definitions
+define( 'CRYPTX_BASENAME', plugin_basename( __FILE__ ) );
+define( 'CRYPTX_BASEFOLDER', plugin_basename( dirname( __FILE__ ) ) );
+define( 'CRYPTX_FILENAME', str_replace( CRYPTX_BASEFOLDER.'/', '', plugin_basename(__FILE__) ) );
 
-load_plugin_textdomain('cryptx', PLUGINDIR . '/' . dirname(plugin_basename (__FILE__)) . '/languages');
+
+load_plugin_textdomain('cryptx', CRYPTX_BASEFOLDER . '/languages');
 
 $cryptX_var = (array) get_option('cryptX');
 
@@ -45,7 +51,7 @@ Class cryptX {
 	*/
 	function cryptX() {
 
-		global $cryptX_var;
+		global $cryptX_var, $wp_version;
 
 		// attach the converstion handlers
 		//
@@ -92,20 +98,37 @@ Class cryptX {
 				);
 			}
 
-		add_action('admin_menu',
-				array(&$this, 'cryptx_meta_box')
-				); 
+		if (@$cryptX_var[metaBox]) {
+			add_action('admin_menu',
+					array(&$this, 'cryptx_meta_box')
+					); 
+	
+			add_action('wp_insert_post',
+					array(&$this, 'cryptx_insert_post')
+					);
+			add_action('wp_update_post',
+					array(&$this, 'cryptx_insert_post')
+					); 
+		}
+		// Add FAQ and support information
+		if ( version_compare( $wp_version, '2.8', '>' ) ) {
+			add_filter( 'plugin_row_meta', array($this, 'filter_plugin_meta'), 10, 2 ); // only 2.8 and higher
+		}
+		add_filter( 'plugin_action_links', array($this, 'filter_plugin_meta'), 10, 2 );
 
-		add_action('wp_insert_post',
-				array(&$this, 'cryptx_insert_post')
-				);
-		add_action('wp_update_post',
-				array(&$this, 'cryptx_insert_post')
-				); 
-
-		} // End function
+	} // End function
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+	function filter_plugin_meta($links, $file) {
+		/* create link */
+		if ( $file == CRYPTX_BASENAME ) {
+				$links[] = sprintf( '<a href="options-general.php?page=%s">%s</a>', CRYPTX_BASENAME, __('Settings') );
+				$links[] = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696">' . __('Donate', 'cryptx') . '</a>';
+		}
+	
+		return $links;
+	}
 
 	function filter($apply)
 	{
@@ -161,7 +184,6 @@ Class cryptX {
 				break;
 
 			case 3: // uploaded image for mail link
-//				$imgurl = "/" . PLUGINDIR . "/" . dirname(plugin_basename (__FILE__)) . "/images/" . $cryptX_var[alt_uploadedimage];
 				$imgurl = $cryptX_var[alt_uploadedimage];
 				$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[http_linkimage_title] . "\" title=\"" . $cryptX_var[http_linkimage_title] . "\">";
 				break;
@@ -182,7 +204,7 @@ Class cryptX {
 
 	function _dirImages()
 	{
-		$dir = plugin_dir_path( __FILE__ ).'images';
+		$dir = plugin_dir_path( __FILE__ ).'images'; // CRYPTX_BASEFOLDER.'/images';
 		$fh = opendir($dir); //Verzeichnis
 		$verzeichnisinhalt = array();
 		while (true == ($file = readdir($fh)))
@@ -276,6 +298,7 @@ Class cryptX {
 					'opt_linktext' => 0,
 					'autolink' => 1,
 					'excludedIDs' => '',
+					'metaBox' => 1,
 				)
 			);
 		$cryptX_var = (array) get_option('cryptX'); // reread Options
@@ -309,7 +332,7 @@ Class cryptX {
 	function cryptx_meta() {
 		global $post;
 		?>
-		<input type="checkbox" name="cryptxoff" <?php if ($this->_excluded($post->ID)) { echo 'checked="checked"'; } ?>/> Disable CryptX 
+		<input type="checkbox" name="cryptxoff" <?php if ($this->_excluded($post->ID)) { echo 'checked="checked"'; } ?>/> Disable CryptX for this post/page
 		<?php
 	}
 	
@@ -319,7 +342,7 @@ Class cryptX {
 		<fieldset id="cryptxoption" class="dbx-box">
 		<h3 class="dbx-handle">CryptX</h3>
 		<div class="dbx-content">
-			<input type="checkbox" name="cryptxon" <?php if ($this->_excluded($post->ID)) { echo 'checked="checked"'; } ?>/> CryptX disabled?
+			<input type="checkbox" name="cryptxoff" <?php if ($this->_excluded($post->ID)) { echo 'checked="checked"'; } ?>/> Disable CryptX for this post/page
 		</div>
 		</fieldset>
 		<?php 
@@ -366,10 +389,11 @@ Class cryptX {
 			__FILE__,
 			array(
 			$this,
-			'_submenu',
+			'_submenu'
 			)
 		);
 	}
+	
 
 	/**
 	* Handles and renders the menu page
@@ -474,7 +498,8 @@ Class cryptX {
 			<tr valign="top">
 				<th scope="row"><?php _e("Excluded ID's...",'cryptx'); ?></th>
 				<td><input name="cryptX_var[excludedIDs]" value="<?php echo $cryptX_var[excludedIDs]; ?>" type="text" class="regular-text" />
-				<br/><span class="setting-description"><?php _e("Enter all Page/Post ID's to exclude from CryptX as comma seperated list.",'cryptx'); ?></span></td>
+				<br/><span class="setting-description"><?php _e("Enter all Page/Post ID's to exclude from CryptX as comma seperated list.",'cryptx'); ?></span>
+				<br/><input name="cryptX_var[metaBox]" <?php echo ($cryptX_var[metaBox]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Enable the CryptX Widget on editing a post or page.",'cryptx'); ?></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row"><?php _e("Type of decryption",'cryptx'); ?></th>
@@ -531,13 +556,15 @@ Class cryptX {
 				<td><?php
 				$data = get_plugin_data(__FILE__);
 				echo sprintf(
-					'%1$s: %2$s | %3$s: %4$s | %5$s: <a href="http://weber-nrw.de" target="_blank">Ralf Weber</a> | <a href="http://twitter.com/Weber_NRW" target="_blank">%6$s</a><br />',
+					'%1$s: %2$s | %3$s: %4$s | %5$s: <a href="http://weber-nrw.de" target="_blank">Ralf Weber</a> | <a href="http://twitter.com/Weber_NRW" target="_blank">%6$s</a> | <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696">%7$s</a><br />',
 					__('Plugin'),
 					'CryptX',
 					__('Version'),
 					$data['Version'],
 					__('Author'),
-					__('Follow on Twitter', 'cryptx'));
+					__('Follow on Twitter', 'cryptx'),
+					__('Donate', 'cryptx')
+				);
 				?>
 				</td>
 			</tr>
