@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail
 Requires at least: 2.0
 Tested up to: 3.0-beta1
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 
 == Description ==
 
@@ -22,6 +22,8 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 == Changelog ==
 
 See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 2.5.1 =
+* Added Option to disabled/enable the CryptX Widget on editing a post or page.
 = 2.5.0 =
 * Changed the location to store the disabled per post/page option from postmeta to CryptX Options. This should keep the postmeta fields clean. 
 = 2.4.6 =
