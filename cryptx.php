@@ -109,23 +109,37 @@ Class cryptX {
 					array(&$this, 'cryptx_insert_post')
 					); 
 		}
+		
 		// Add FAQ and support information
 		if ( version_compare( $wp_version, '2.8', '>' ) ) {
-			add_filter( 'plugin_row_meta', array($this, 'filter_plugin_meta'), 10, 2 ); // only 2.8 and higher
+			add_filter( 'plugin_row_meta', array($this, 'init_row_meta'), 10, 2 ); // only 2.8 and higher
+		} else {
+			add_filter( 'plugin_action_links', array($this, 'init_row_meta'), 10, 2 );
 		}
-		add_filter( 'plugin_action_links', array($this, 'filter_plugin_meta'), 10, 2 );
-
+		
 	} // End function
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	function filter_plugin_meta($links, $file) {
-		/* create link */
-		if ( $file == CRYPTX_BASENAME ) {
-				$links[] = sprintf( '<a href="options-general.php?page=%s">%s</a>', CRYPTX_BASENAME, __('Settings') );
-				$links[] = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696">' . __('Donate', 'cryptx') . '</a>';
+	function init_row_meta($links, $file) {
+		if (CRYPTX_BASENAME == $file) {
+			return array_merge(
+				$links,
+				array(
+					sprintf(
+						'<a href="options-general.php?page=%s">%s</a>',
+						CRYPTX_BASENAME,
+						__('Settings')
+					)
+				),
+				array(
+					sprintf(
+						'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696">%s</a>',
+						__('Donate', 'cryptx')
+					)
+				)
+			);
 		}
-	
 		return $links;
 	}
 
@@ -203,8 +217,8 @@ Class cryptX {
 
 	function _dirImages()
 	{
-		$dir = plugin_dir_path( __FILE__ ).'images'; // CRYPTX_BASEFOLDER.'/images';
-		$fh = opendir($dir); //Verzeichnis
+		$dir = plugin_dir_path( __FILE__ ).'images'; 
+		$fh = opendir($dir);
 		$verzeichnisinhalt = array();
 		while (true == ($file = readdir($fh)))
 		{
@@ -565,6 +579,7 @@ Class cryptX {
 					__('Donate', 'cryptx')
 				);
 				?>
+				Please support me by translating CryptX into other languages. You can download the cryptx.pot file from my <a href="http://weber-nrw.de/wordpress/cryptx/downloads/">site</a> and mail me the zipped language files. Thanks for it.
 				</td>
 			</tr>
 		</table>
@@ -614,13 +629,9 @@ new cryptX;
 function cryptx( $content, $text="", $css="", $echo=1 )
 {
 	global $cryptX_var;
-
 	$cryptX = new cryptX;
-
 	$content = $cryptX->autolink( $content );
-
 	$content = $cryptX->encryptx( $content );
-
 	if("" != $text) {
 		$content = preg_replace( "/(<a[^>]*>)(.*)(<\/a>)/i", '$1'.$text.'$3', $content );
 	}
@@ -628,7 +639,6 @@ function cryptx( $content, $text="", $css="", $echo=1 )
 		$content = preg_replace( "/(<a[^>]*)(>)/i", '$1 class="'.$css.'"$2', $content );
 	}
 	if(1 == $echo) echo $content;
-
 	return $content;
 }
 ?>
