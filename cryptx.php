@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.5.1
+Version: 2.6.1
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -117,9 +117,73 @@ Class cryptX {
 			add_filter( 'plugin_action_links', array($this, 'init_row_meta'), 10, 2 );
 		}
 		
+		// Add tinyurl for image action
+		add_filter( 'init', array($this, 'init_tinyurl'));
 	} // End function
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+	function init_tinyurl() {
+		global $cryptX_var;
+		// check TinyURl
+		$url = $_SERVER["REQUEST_URI"];
+		$params = explode( '/', $url );
+		if ( count( $params ) > 1 ) {
+			$tiny_url = $params[count( $params ) -2];
+			if ( $tiny_url == md5( get_bloginfo('url') ) ) {
+				// define vars
+				$font = $cryptX_var[c2i_font]; 
+				$msg = $params[count( $params ) -1];
+				$size = $cryptX_var[c2i_fontSize]; 
+				$pad = 1;
+				$transparent = 1;
+				$red = hexdec(substr($cryptX_var[c2i_fontRGB],0,2)); 
+				$grn = hexdec(substr($cryptX_var[c2i_fontRGB],2,2));
+				$blu = hexdec(substr($cryptX_var[c2i_fontRGB],4,2));
+				$bg_red = 255 - $red;
+				$bg_grn = 255 - $grn;
+				$bg_blu = 255 - $blu;
+				$width = 0;
+				$height = 0;
+				$offset_x = 0;
+				$offset_y = 0;
+				$bounds = array();
+				$image = "";
+				// get the font height.
+				$bounds = ImageTTFBBox($size, 0, $font, "W");
+				if ($rot < 0) 
+				{
+					$font_height = abs($bounds[7]-$bounds[1]);		
+				} 
+				else if ($rot > 0) 
+				{
+					$font_height = abs($bounds[1]-$bounds[7]);
+				} 
+				else 
+				{
+					$font_height = abs($bounds[7]-$bounds[1]);
+				}
+				// determine bounding box.
+				$bounds = ImageTTFBBox($size, 0, $font, $msg);
+				$width = abs($bounds[4]-$bounds[6]);
+				$height = abs($bounds[7]-$bounds[1]);
+				$offset_y = $font_height+abs(($height - $font_height)/2)-1;
+				$offset_x = 0;
+				$image = imagecreatetruecolor($width+($pad*2),$height+($pad*2));
+				imagesavealpha($image, true);
+				//$background = ImageColorAllocate($image, $bg_red, $bg_grn, $bg_blu);
+				$foreground = ImageColorAllocate($image, $red, $grn, $blu);
+				$background = imagecolorallocatealpha($image, 0, 0, 0, 127);
+				imagefill($image, 0, 0, $background);
+				// render the image
+				ImageTTFText($image, $size, 0, $offset_x+$pad, $offset_y+$pad, $foreground, $font, $msg);
+				// output PNG object.
+				Header("Content-type: image/png");
+				imagePNG($image);
+				die;
+			}
+		}
+	}
 
 	function init_row_meta($links, $file) {
 		if (CRYPTX_BASENAME == $file) {
@@ -205,6 +269,10 @@ Class cryptX {
 				$linktext = antispambot($Match[1]);
 				break;
 
+			case 5: // convert to image
+				$linktext = "<img src=\"" . get_bloginfo('url') . "/" . md5( get_bloginfo('url') ) . "/" . antispambot($Match[1]) . "\" style=\"vertical-align:text-bottom\" alt=\"" . antispambot($Match[1]) . "\" title=\"" . antispambot($Match[1]) . "\">";
+				break;
+
 			default:
 				$linktext = str_replace( "@", $cryptX_var[at], $Match[1]);
 				$linktext = str_replace( ".", $cryptX_var[dot], $linktext);
@@ -223,6 +291,21 @@ Class cryptX {
 		while (true == ($file = readdir($fh)))
 		{
 			if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) 
+				{
+				$verzeichnisinhalt[] = $file;
+				}
+		}
+		return $verzeichnisinhalt;
+	}
+
+	function _dirFonts()
+	{
+		$dir = plugin_dir_path( __FILE__ ).'fonts'; 
+		$fh = opendir($dir);
+		$verzeichnisinhalt = array();
+		while (true == ($file = readdir($fh)))
+		{
+			if ((substr(strtolower($file), -3)=="ttf") or (substr(strtolower($file), -3)=="ttf")) 
 				{
 				$verzeichnisinhalt[] = $file;
 				}
@@ -274,6 +357,7 @@ Class cryptX {
 
 		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
+		$src[]="/(\()([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(\))/si";
 		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))([\s])/si";
 		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
 		$src[]="/^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
@@ -281,6 +365,7 @@ Class cryptX {
 		$src[]="/(<\/A>)<\/A>/i";
 
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>";
+		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
@@ -298,6 +383,8 @@ Class cryptX {
 
 	function install() {
 		global $cryptX_var, $wpdb;
+		$firstImage = $this->_dirImages();
+		$firstFont = $this->_dirFonts();
 		add_option(
 			'cryptX',
 				array(
@@ -312,20 +399,38 @@ Class cryptX {
 					'autolink' => 1,
 					'excludedIDs' => '',
 					'metaBox' => 1,
+					'alt_uploadedimage' => plugins_url('cryptx/images/').$firstImage[0],
+					'c2i_font' => plugin_dir_path( __FILE__ ).'fonts/'.$firstFont[0],
+					'c2i_fontSize' => 10,
+					'c2i_fontRGB' => '000000',
 				)
 			);
 		$cryptX_var = (array) get_option('cryptX'); // reread Options
 		if ($cryptX_var[excludedIDs] == "") {
+			$tmp = array();
 			$excludes = $wpdb->get_results("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'cryptxoff' AND meta_value = 'true'");
-			foreach ($excludes as $exclude) {
-				$tmp[] = $exclude->post_id;
+			if(count($excludes) > 0) {
+				foreach ($excludes as $exclude) {
+					$tmp[] = $exclude->post_id;
+				}
+				sort($tmp);
+				$cryptX_var[excludedIDs] = implode(",", $tmp);
+				update_option( 'cryptX', $cryptX_var);
+				$cryptX_var = (array) get_option('cryptX'); // reread Options			
+				$wpdb->query("DELETE FROM $wpdb->postmeta WHERE meta_key = 'cryptxoff'");
 			}
-			sort($tmp);
-			$cryptX_var[excludedIDs] = implode(",", $tmp);
-			update_option( 'cryptX', $cryptX_var);
-			$cryptX_var = (array) get_option('cryptX'); // reread Options			
-			$wpdb->query("DELETE FROM $wpdb->postmeta WHERE meta_key = 'cryptxoff'");
 		}
+		if (empty($cryptX_var[c2i_font])) {
+			$cryptX_var[c2i_font] = plugin_dir_path( __FILE__ ).'fonts/'.$firstFont[0];
+		}
+		if (empty($cryptX_var[c2i_fontSize])) {
+			$cryptX_var[c2i_fontSize] = 10;
+		}
+		if (empty($cryptX_var[c2i_fontRGB])) {
+			$cryptX_var[c2i_fontRGB] = '000000';
+		}
+		update_option( 'cryptX', $cryptX_var);
+		$cryptX_var = (array) get_option('cryptX'); // reread Options			
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -472,14 +577,14 @@ Class cryptX {
           	<tr valign="top">
             	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext4" value="3" <?php echo ($cryptX_var[opt_linktext] == 3) ? 'checked="checked"' : ''; ?>/></td>
             	<th><label for="cryptX_var[alt_uploadedimage]"><?php _e("Select image from folder",'cryptx'); ?></label></th>
-            	<td><select name="cryptX_var[alt_uploadedimage]" onchange="cryptX_bild_wechsel(this)">
+            	<td>            	<select name="cryptX_var[alt_uploadedimage]" onchange="cryptX_bild_wechsel(this)">
 				<?php foreach($this->_dirImages() as $image) { 
-					$FirstIMG = (!isset($FirstIMG))? plugins_url('cryptx/images/').$image : ($cryptX_var[alt_uploadedimage] == plugins_url('cryptx/images/').$image) ? plugins_url('cryptx/images/').$image : $FirstIMG;
 					?>
 					<option value="<?php echo plugins_url('cryptx/images/').$image; ?>" <?php echo ($cryptX_var[alt_uploadedimage] == plugins_url('cryptx/images/').$image) ? 'selected' : ''; ?> ><?php echo $image; ?></option>
 				<?php } ?>
-				</select>&nbsp;&nbsp;<img src="<?php echo $FirstIMG; ?>" id="cryptXmailTo"><br/>
-				<span class="setting-description"><?php echo sprintf( __("Upload your favorite email-image to '%s'. Only .jpg and .gif Supported!",'cryptx'), plugin_dir_path( __FILE__ ) ); ?></span></td>
+				</select>
+				<br/><?php _e("the selected image: ",'cryptx'); ?><img src="<?php echo $cryptX_var[alt_uploadedimage]; ?>" id="cryptXmailTo" align="top" style="padding: 3px;"><br/>
+				<span class="setting-description"><?php echo sprintf( __("Upload your favorite email-image to '%s'. Only .jpg and .gif Supported!",'cryptx'), plugin_dir_path( __FILE__ ).'images/' ); ?></span></td>
 			</tr>
 			<tr valign="top">
 				<td>&nbsp;</td>
@@ -487,12 +592,39 @@ Class cryptX {
 				<td><input name="cryptX_var[alt_linkimage_title]" value="<?php echo $cryptX_var[alt_linkimage_title]; ?>" type="text" class="regular-text" /></td>
           	</tr>
          	<tr valign="top">
-            	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext" value="4" <?php echo ($cryptX_var[opt_linktext] == 4) ? 'checked="checked"' : ''; ?>/></td>
+            	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext4" value="4" <?php echo ($cryptX_var[opt_linktext] == 4) ? 'checked="checked"' : ''; ?>/></td>
             	<th colspan="2"><?php _e("Text scrambled by AntiSpamBot (<small>Try it and look at your site and check the html source!</small>)",'cryptx'); ?></th>
+          	</tr>
+        	<tr valign="top">
+            	<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext5" value="5" <?php echo ($cryptX_var[opt_linktext] == 5) ? 'checked="checked"' : ''; ?>/></td>
+            	<th><?php _e("Convert Email to PNG-image",'cryptx'); ?></th>
+            	<td><?php _e("Example with the saved options: ",'cryptx'); ?><img src="<?php echo get_bloginfo('url'); ?>/<?php echo md5( get_bloginfo('url') ); ?>/<?php echo antispambot("test@example.com"); ?>" align="absmiddle" alt="<?php echo antispambot("test@example.com"); ?>" title="<?php echo antispambot("test@example.com"); ?>"></td>
+          	</tr>
+			<tr valign="top">
+				<td>&nbsp;</td>
+            	<th><label for="cryptX_var[c2i_font]"><?php _e("Choose a Font",'cryptx'); ?></label></th>
+            	<td><select name="cryptX_var[c2i_font]">
+				<?php foreach($this->_dirFonts() as $font) { ?>
+					<option value="<?php echo plugin_dir_path( __FILE__ ).'fonts/'.$font; ?>" <?php echo ($cryptX_var[c2i_font] == plugin_dir_path( __FILE__ ).'fonts/'.$font) ? 'selected' : ''; ?> ><?php echo $font; ?></option>
+				<?php } ?>
+				</select><br/>
+				<span class="setting-description"><?php echo sprintf( __("Upload your favorite font to '%s'. Only .ttf is Supported!",'cryptx'), plugin_dir_path( __FILE__ ).'fonts/' ); ?></span>
+				</td>
+          	</tr>
+			<tr valign="top">
+				<td>&nbsp;</td>
+            	<th><label for="cryptX_var[c2i_fontSize]"><?php _e("Font size (pixel)",'cryptx'); ?></label></th>
+				<td><input name="cryptX_var[c2i_fontSize]" value="<?php echo $cryptX_var[c2i_fontSize]; ?>" type="text" class="regular-text" /></td>
+          	</tr>
+			<tr valign="top">
+				<td>&nbsp;</td>
+            	<th><label for="cryptX_var[c2i_fontRGB]"><?php _e("Font color (RGB)",'cryptx'); ?></label></th>
+				<td><input name="cryptX_var[c2i_fontRGB]" value="<?php echo $cryptX_var[c2i_fontRGB]; ?>" type="text" class="regular-text" /></td>
           	</tr>
         </table>
 		</div>
 		</div>
+
 			<p><input type="submit" name="cryptX" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
 
 		<div class="postbox">

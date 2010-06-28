@@ -3,8 +3,8 @@ Contributors: Ralf Weber
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail
 Requires at least: 2.0
-Tested up to: 3.0-beta1
-Stable tag: 2.5.1
+Tested up to: 3.1-alpha
+Stable tag: 2.6.1
 
 == Description ==
 
@@ -22,6 +22,10 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 == Changelog ==
 
 See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 2.6.1 =
+* bugfix for the autolink function ( see comment: http://weber-nrw.de/wordpress/cryptx/comment-page-7/#comment-415 )
+= 2.6.0 =
+* Added new feature to convert email adress into an image
 = 2.5.1 =
 * Added Option to disabled/enable the CryptX Widget on editing a post or page.
 = 2.5.0 =
