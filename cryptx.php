@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.6.1
+Version: 2.6.2
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -91,11 +91,20 @@ Class cryptX {
 		// attach javascript to Header
 		//
 		if (@$cryptX_var[java]) {
-			add_action(
-				'wp_head',
-				array(&$this, 'header')
-				);
+			if (@$cryptX_var[load_java]) {
+				add_action(
+					'wp_footer',
+					array(&$this, 'header'),
+					9
+					);
+			} else {
+				add_action(
+					'wp_head',
+					array(&$this, 'header'),
+					9
+					);
 			}
+		}
 
 		if (@$cryptX_var[metaBox]) {
 			add_action('admin_menu',
@@ -650,6 +659,11 @@ Class cryptX {
 				<th scope="row"><?php _e("Type of decryption",'cryptx'); ?></th>
 				<td><input name="cryptX_var[java]" <?php echo ($cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="1" />&nbsp;&nbsp;<?php _e("Use javascript to hide the Email-Link.",'cryptx'); ?><br/>
 				    <input name="cryptX_var[java]" <?php echo (!$cryptX_var[java]) ? 'checked="checked"' : ''; ?> type="radio" value="0" />&nbsp;&nbsp;<?php _e("Use Unicode to hide the Email-Link.",'cryptx'); ?></td>
+			</tr>
+			<tr valign="top">
+				<th scope="row"><?php _e("Where to load the needed javascript...",'cryptx'); ?></th>
+				<td><input name="cryptX_var[load_java]" <?php echo (!$cryptX_var[load_java]) ? 'checked="checked"' : ''; ?> type="radio" value="0" />&nbsp;&nbsp;<?php _e("Load the javascript in the <b>header</b> of the page.",'cryptx'); ?><br/>
+				    <input name="cryptX_var[load_java]" <?php echo ($cryptX_var[load_java]) ? 'checked="checked"' : ''; ?> type="radio" value="1" />&nbsp;&nbsp;<?php _e("Load the javascript in the <b>footer</b> of the page.",'cryptx'); ?></td>
 			</tr>
 			<tr valign="top">
 				<th scope="row" colspan="2"><input name="cryptX_var[autolink]" <?php echo ($cryptX_var[autolink]) ? 'checked="checked"' : ''; ?> type="checkbox" />&nbsp;&nbsp;<?php _e("Add mailto to all unlinked email addresses",'cryptx'); ?></th>
