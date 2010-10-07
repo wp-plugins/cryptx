@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.6.2
+Version: 2.6.3
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -218,16 +218,14 @@ Class cryptX {
 
 	function filter($apply)
 	{
-		global $cryptX_var, $shortcode_tags;
+		global $cryptX_var, $post, $shortcode_tags;
 
 		if (@$cryptX_var[autolink]) {
 			add_filter($apply, array(&$this, 'autolink'), 5);
+			if (!empty($shortcode_tags) || is_array($shortcode_tags)) {
+				add_filter($apply, array(&$this, 'autolink'), 11);
+			}		
 		}
-
-		if (!empty($shortcode_tags) || is_array($shortcode_tags)) {
-			add_filter($apply, array(&$this, 'autolink'), 11);
-		}		
-
 		add_filter($apply, array($this, 'encryptx'), 12);
 		add_filter($apply, array($this, 'linktext'), 13);
 	}
@@ -238,18 +236,13 @@ Class cryptX {
 		global $cryptX_var;
 		$return = false;
 		$exIDs = explode(",", $cryptX_var[excludedIDs]);
-		if(array_search($ID, $exIDs) >0 ) $return = true;
+		if(in_array($ID, $exIDs) > 0 ) $return = true;
 		return $return;
 	}
 	
 	function linktext($content)
 	{
 		global $post;
-		$cryptxoff = false;
-		$cryptxoffmeta = get_post_meta($post->ID,'cryptxoff',true);
-		if ($cryptxoffmeta == "true") {
-			$cryptxoff = true;
-		}
 		if (!$this->_excluded($post->ID)) {
 			$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), '_Linktext'), $content );
 		}
@@ -363,7 +356,8 @@ Class cryptX {
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 	function autolink($content) {
-
+		global $post;
+		if ($this->_excluded($post->ID)) return $content;
 		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
 		$src[]="/(\()([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(\))/si";
@@ -372,7 +366,6 @@ Class cryptX {
 		$src[]="/^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(<a[^>]*>)<a[^>]*>/";
 		$src[]="/(<\/A>)<\/A>/i";
-
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>";
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 		$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
@@ -381,9 +374,7 @@ Class cryptX {
 		$tar[]="<a href=\"mailto:\\0\">\\0</a>";
 		$tar[]="\\1";
 		$tar[]="\\1";
-
 		$content = preg_replace($src,$tar,$content);
-
 		return $content;
 	}
 
@@ -491,7 +482,11 @@ Class cryptX {
 	
 	function cryptx_insert_post($pID) {
 		global $cryptX_var, $post;
+		
+		$rev = wp_is_post_revision($pID);
+		if($rev) $pID = $rev;
 		$b = explode(",", $cryptX_var[excludedIDs]);
+		if($b[0] == '') unset($b[0]);
 		foreach($b as $x=>$y) {
 			if($y == $pID) {
 				unset($b[$x]);
@@ -499,6 +494,7 @@ Class cryptX {
 			}
 		}
 		if (isset($_POST['cryptxoff'])) $b[] = $pID;
+		$b = array_unique($b, SORT_NUMERIC);
 		sort($b);
 		$cryptX_var[excludedIDs] = implode(",", $b);
 		update_option( 'cryptX', $cryptX_var);
