@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.6.4
+Version: 2.6.6
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -259,12 +259,12 @@ Class cryptX {
 				break;
 
 			case 2: // alternative image for mail link
-				$linktext = "<img src=\"" . $cryptX_var[alt_linkimage] . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[alt_linkimage_title] . "\" title=\"" . $cryptX_var[alt_linkimage_title] . "\">";
+				$linktext = "<img src=\"" . $cryptX_var[alt_linkimage] . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[alt_linkimage_title] . "\" title=\"" . $cryptX_var[alt_linkimage_title] . "\" />";
 				break;
 
 			case 3: // uploaded image for mail link
 				$imgurl = $cryptX_var[alt_uploadedimage];
-				$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[http_linkimage_title] . "\" title=\"" . $cryptX_var[http_linkimage_title] . "\">";
+				$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var[http_linkimage_title] . "\" title=\"" . $cryptX_var[http_linkimage_title] . "\" />";
 				break;
 
 			case 4: // text scrambled by antispambot
@@ -272,7 +272,7 @@ Class cryptX {
 				break;
 
 			case 5: // convert to image
-				$linktext = "<img src=\"" . get_bloginfo('url') . "/" . md5( get_bloginfo('url') ) . "/" . antispambot($Match[1]) . "\" style=\"vertical-align:text-bottom\" alt=\"" . antispambot($Match[1]) . "\" title=\"" . antispambot($Match[1]) . "\">";
+				$linktext = "<img src=\"" . get_bloginfo('url') . "/" . md5( get_bloginfo('url') ) . "/" . antispambot($Match[1]) . "\" class=\"cryptxImage\" style=\"vertical-align:text-bottom\" alt=\"" . antispambot($Match[1]) . "\" title=\"" . antispambot($Match[1]) . "\" />";
 				break;
 
 			default:
@@ -774,6 +774,7 @@ function cryptx( $content, $text="", $css="", $echo=1 )
 	$cryptX = new cryptX;
 	$content = $cryptX->autolink( $content );
 	$content = $cryptX->encryptx( $content );
+	$content = $cryptX->linktext( $content );
 	if("" != $text) {
 		$content = preg_replace( "/(<a[^>]*>)(.*)(<\/a>)/i", '$1'.$text.'$3', $content );
 	}
