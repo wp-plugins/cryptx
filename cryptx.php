@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.6.6
+Version: 2.7
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -128,9 +128,22 @@ Class cryptX {
 		
 		// Add tinyurl for image action
 		add_filter( 'init', array($this, 'init_tinyurl'));
+		
+		// Add shortcodes
+		add_shortcode( 'cryptx', array($this, 'cryptx_shortcode'));
 	} // End function
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+	function cryptx_shortcode( $atts, $content=null) {
+		global $cryptX_var;
+
+		if (@$cryptX_var[autolink]) $content = $this->autolink($content, true);
+		$content = $this->encryptx($content, true);
+		$content = $this->linktext($content, true);
+
+		return $content;
+	}
 
 	function init_tinyurl() {
 		global $cryptX_var;
@@ -240,10 +253,10 @@ Class cryptX {
 		return $return;
 	}
 	
-	function linktext($content)
+	function linktext($content, $shortcode=false)
 	{
 		global $post;
-		if (!$this->_excluded($post->ID)) {
+		if (!$this->_excluded($post->ID) OR $shortcode=true) {
 			$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), '_Linktext'), $content );
 		}
 		return $content;	
@@ -317,11 +330,11 @@ Class cryptX {
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	function encryptx($content)
+	function encryptx($content, $shortcode=false)
 	{
 		global $post;
 		
-		if (!$this->_excluded($post->ID)) {
+		if (!$this->_excluded($post->ID) OR $shortcode=true) {
 			$content = preg_replace_callback('/<a (.*?)(href=("|\')mailto:(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', array(get_class($this), 'mailtocrypt'), $content );
 		}
 		return $content;
@@ -355,9 +368,9 @@ Class cryptX {
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-	function autolink($content) {
+	function autolink($content, $shortcode=false) {
 		global $post;
-		if ($this->_excluded($post->ID)) return $content;
+		if ($this->_excluded($post->ID) AND $shortcode=false) return $content;
 		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
 		$src[]="/(\()([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(\))/si";
@@ -706,6 +719,12 @@ Class cryptX {
 		<h3><?php _e("Information",'cryptx'); ?></h3>
 		
 		<div class="inside">
+		<table class="form-table">
+			<tr>
+				<td valign="top"><b><i><u>NEWS:</u></i>&nbsp;</b></td>
+				<td width="99%"><b>CryptX 2.7 supports now the shortcode [cryptx]...[/cryptx]! The shortcode was implemented for posts and pages, where CryptX was switched off.</b></td>
+			</tr>
+		</table>
 		<table class="form-table">
 			<tr>
 				<td><?php
