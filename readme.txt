@@ -1,10 +1,10 @@
 === CryptX ===
 Contributors: Ralf Weber
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
-Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail
+Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail, javascript, post, page, widget, image
 Requires at least: 2.0
-Tested up to: 3.1
-Stable tag: 2.6.6
+Tested up to: 3.2-bleeding
+Stable tag: 2.7.1
 
 == Description ==
 
@@ -22,6 +22,10 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 == Changelog ==
 
 See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 2.7.1 =
+* bug fixing with some php installations (thx to Norman Rzepka)
+= 2.7 =
+* added the shortcode [cryptx]...[/cryptx]! The shortcode was implemented for posts and pages, where CryptX was switched off.
 = 2.6.6 =
 * fixed a bug in the template function. (thx to Jessica for reporting the bug)
 = 2.6.5 =
