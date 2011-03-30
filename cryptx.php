@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 2.7.1
+Version: 2.8
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -92,17 +92,9 @@ Class cryptX {
 		//
 		if (@$cryptX_var['java']) {
 			if (@$cryptX_var['load_java']) {
-				add_action(
-					'wp_footer',
-					array(&$this, 'header'),
-					9
-					);
+				add_action(	'wp_footer', array(&$this, 'header'), 9	);
 			} else {
-				add_action(
-					'wp_head',
-					array(&$this, 'header'),
-					9
-					);
+				add_action(	'wp_head', array(&$this, 'header'),	9 );
 			}
 		}
 
@@ -128,7 +120,8 @@ Class cryptX {
 		
 		// Add tinyurl for image action
 		add_filter( 'init', array($this, 'init_tinyurl'));
-		
+		add_action( 'parse_request', array($this, 'cryptx_parse_request'));
+
 		// Add shortcodes
 		add_shortcode( 'cryptx', array($this, 'cryptx_shortcode'));
 	} // End function
@@ -145,6 +138,17 @@ Class cryptX {
 		return $content;
 	}
 
+	function cryptx_parse_request( $wp ) {
+		if ( isset($_GET['cryptx']) ) {
+			switch( $_GET['cryptx'] ) {
+				case 'news':
+					include( 'ajax/news.php' );
+					break;
+			}			
+			exit;
+		}	
+	}
+
 	function init_tinyurl() {
 		global $cryptX_var;
 		// check TinyURl
@@ -154,9 +158,9 @@ Class cryptX {
 			$tiny_url = $params[count( $params ) -2];
 			if ( $tiny_url == md5( get_bloginfo('url') ) ) {
 				// define vars
-				$font = $cryptX_var[c2i_font]; 
+				$font = $cryptX_var['c2i_font']; 
 				$msg = $params[count( $params ) -1];
-				$size = $cryptX_var[c2i_fontSize]; 
+				$size = $cryptX_var['c2i_fontSize']; 
 				$pad = 1;
 				$transparent = 1;
 				$red = hexdec(substr($cryptX_var['c2i_fontRGB'],0,2)); 
@@ -173,18 +177,7 @@ Class cryptX {
 				$image = "";
 				// get the font height.
 				$bounds = ImageTTFBBox($size, 0, $font, "W");
-				if ($rot < 0) 
-				{
-					$font_height = abs($bounds[7]-$bounds[1]);		
-				} 
-				else if ($rot > 0) 
-				{
-					$font_height = abs($bounds[1]-$bounds[7]);
-				} 
-				else 
-				{
-					$font_height = abs($bounds[7]-$bounds[1]);
-				}
+				$font_height = abs($bounds[7]-$bounds[1]);
 				// determine bounding box.
 				$bounds = ImageTTFBBox($size, 0, $font, $msg);
 				$width = abs($bounds[4]-$bounds[6]);
@@ -256,7 +249,7 @@ Class cryptX {
 	function linktext($content, $shortcode=false)
 	{
 		global $post;
-		if (!$this->_excluded($post->ID) OR $shortcode=true) {
+		if (!$this->_excluded($post->ID) OR $shortcode!=false) {
 			$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", array(get_class($this), '_Linktext'), $content );
 		}
 		return $content;	
@@ -334,7 +327,7 @@ Class cryptX {
 	{
 		global $post;
 		
-		if (!$this->_excluded($post->ID) OR $shortcode=true) {
+		if (!$this->_excluded($post->ID) OR $shortcode!=false) {
 			$content = preg_replace_callback('/<a (.*?)(href=("|\')mailto:(.*?)("|\')(.*?)|)>(.*?)<\/a>/i', array(get_class($this), 'mailtocrypt'), $content );
 		}
 		return $content;
@@ -370,7 +363,7 @@ Class cryptX {
 
 	function autolink($content, $shortcode=false) {
 		global $post;
-		if ($this->_excluded($post->ID) AND $shortcode=false) return $content;
+		if ($this->_excluded($post->ID) AND $shortcode==false) return $content;
 		$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 		$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
 		$src[]="/(\()([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(\))/si";
@@ -398,9 +391,8 @@ Class cryptX {
 		global $cryptX_var, $wpdb;
 		$firstImage = $this->_dirImages();
 		$firstFont = $this->_dirFonts();
-		add_option(
-			'cryptX',
-				array(
+		$cryptX_var = (array) get_option('cryptX'); // reread Options
+		$defaults = array(
 					'at' => ' [at] ',
 					'dot' => ' [dot] ',
 					'theContent' => 1,
@@ -410,15 +402,18 @@ Class cryptX {
 					'java' => 1,
 					'opt_linktext' => 0,
 					'autolink' => 1,
+					'alt_linktext' => '',
+					'alt_linkimage' => '',
+					'http_linkimage_title' => '',
+					'alt_linkimage_title' => '',
 					'excludedIDs' => '',
 					'metaBox' => 1,
 					'alt_uploadedimage' => plugins_url('cryptx/images/').$firstImage[0],
 					'c2i_font' => plugin_dir_path( __FILE__ ).'fonts/'.$firstFont[0],
 					'c2i_fontSize' => 10,
-					'c2i_fontRGB' => '000000',
-				)
-			);
-		$cryptX_var = (array) get_option('cryptX'); // reread Options
+					'c2i_fontRGB' => '000000'
+				);
+		$cryptX_var = $cryptX_var + $defaults;
 		if ($cryptX_var['excludedIDs'] == "") {
 			$tmp = array();
 			$excludes = $wpdb->get_results("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'cryptxoff' AND meta_value = 'true'");
@@ -433,14 +428,14 @@ Class cryptX {
 				$wpdb->query("DELETE FROM $wpdb->postmeta WHERE meta_key = 'cryptxoff'");
 			}
 		}
-		if (empty($cryptX_var[c2i_font])) {
-			$cryptX_var[c2i_font] = plugin_dir_path( __FILE__ ).'fonts/'.$firstFont[0];
+		if (empty($cryptX_var['c2i_font'])) {
+			$cryptX_var['c2i_font'] = plugin_dir_path( __FILE__ ).'fonts/'.$firstFont[0];
 		}
-		if (empty($cryptX_var[c2i_fontSize])) {
-			$cryptX_var[c2i_fontSize] = 10;
+		if (empty($cryptX_var['c2i_fontSize'])) {
+			$cryptX_var['c2i_fontSize'] = 10;
 		}
-		if (empty($cryptX_var[c2i_fontRGB])) {
-			$cryptX_var[c2i_fontRGB] = '000000';
+		if (empty($cryptX_var['c2i_fontRGB'])) {
+			$cryptX_var['c2i_fontRGB'] = '000000';
 		}
 		update_option( 'cryptX', $cryptX_var);
 		$cryptX_var = (array) get_option('cryptX'); // reread Options			
@@ -521,7 +516,7 @@ Class cryptX {
 		add_options_page(
 			'CryptX',
 			(version_compare($GLOBALS['wp_version'], '2.6.999', '>') ? '<img src="' .@plugins_url('cryptx/icon.png'). '" width="10" height="10" alt="CryptX Icon" />' : ''). 'CryptX',
-			9,
+			'manage_options',
 			__FILE__,
 			array(
 			$this,
@@ -561,6 +556,41 @@ Class cryptX {
 		<?php wp_nonce_field('cryptX') ?>
 		
 		<div id="poststuff" class="ui-sortable">
+
+		<div class="postbox">
+		
+		<h3><?php _e("Information",'cryptx'); ?></h3>
+		
+		<div class="inside">
+		<table class="form-table">
+			<tr>
+				<td valign="top" width="1%" nowrap><b><i><u>NEWS:</u></i>&nbsp;</b></td>
+				<td valign="top"><div id="cryptx-news-content" style="display:none;"></div></td>
+				<td valign="top" width="50%" style="border-left: 1px solid #999;"><?php
+				$data = get_plugin_data(__FILE__);
+				echo sprintf(
+					'%1$s: %2$s <br /> %3$s: %4$s <br /> %5$s: <a href="http://weber-nrw.de" target="_blank">Ralf Weber</a> | <a href="http://twitter.com/Weber_NRW" target="_blank">%6$s</a> | <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696">%7$s</a><br />',
+					__('Plugin'),
+					'CryptX',
+					__('Version'),
+					$data['Version'],
+					__('Author'),
+					__('Follow on Twitter', 'cryptx'),
+					__('Donate', 'cryptx')
+				);
+				?>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" align="center">
+				Please support me by translating CryptX into other languages. You can download the cryptx.pot file from my <a href="http://weber-nrw.de/wordpress/cryptx/downloads/">site</a> and mail me the zipped language files. Thanks for it.
+				</td>
+			</tr>
+		</table>
+
+		</div>
+		</div>
+
 		<div class="postbox">
 		
 		<h3><?php _e("Presentation",'cryptx'); ?></h3>
@@ -623,7 +653,7 @@ Class cryptX {
             	<th><label for="cryptX_var[c2i_font]"><?php _e("Choose a Font",'cryptx'); ?></label></th>
             	<td><select name="cryptX_var[c2i_font]">
 				<?php foreach($this->_dirFonts() as $font) { ?>
-					<option value="<?php echo plugin_dir_path( __FILE__ ).'fonts/'.$font; ?>" <?php echo ($cryptX_var[c2i_font] == plugin_dir_path( __FILE__ ).'fonts/'.$font) ? 'selected' : ''; ?> ><?php echo $font; ?></option>
+					<option value="<?php echo plugin_dir_path( __FILE__ ).'fonts/'.$font; ?>" <?php echo ($cryptX_var['c2i_font'] == plugin_dir_path( __FILE__ ).'fonts/'.$font) ? 'selected' : ''; ?> ><?php echo $font; ?></option>
 				<?php } ?>
 				</select><br/>
 				<span class="setting-description"><?php echo sprintf( __("Upload your favorite font to '%s'. Only .ttf is Supported!",'cryptx'), plugin_dir_path( __FILE__ ).'fonts/' ); ?></span>
@@ -714,50 +744,27 @@ Class cryptX {
 		</div>
 		</div>
 
-		<div class="postbox">
-		
-		<h3><?php _e("Information",'cryptx'); ?></h3>
-		
-		<div class="inside">
-		<table class="form-table">
-			<tr>
-				<td valign="top"><b><i><u>NEWS:</u></i>&nbsp;</b></td>
-				<td width="99%"><b>CryptX 2.7 supports now the shortcode [cryptx]...[/cryptx]! The shortcode was implemented for posts and pages, where CryptX was switched off.</b></td>
-			</tr>
-		</table>
-		<table class="form-table">
-			<tr>
-				<td><?php
-				$data = get_plugin_data(__FILE__);
-				echo sprintf(
-					'%1$s: %2$s | %3$s: %4$s | %5$s: <a href="http://weber-nrw.de" target="_blank">Ralf Weber</a> | <a href="http://twitter.com/Weber_NRW" target="_blank">%6$s</a> | <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696">%7$s</a><br />',
-					__('Plugin'),
-					'CryptX',
-					__('Version'),
-					$data['Version'],
-					__('Author'),
-					__('Follow on Twitter', 'cryptx'),
-					__('Donate', 'cryptx')
-				);
-				?>
-				Please support me by translating CryptX into other languages. You can download the cryptx.pot file from my <a href="http://weber-nrw.de/wordpress/cryptx/downloads/">site</a> and mail me the zipped language files. Thanks for it.
-				</td>
-			</tr>
-		</table>
-
-		</div>
-		</div>
-
 		</div>
 		
 		</form>
 	
 		<script type="text/javascript">
-		<!--
 		function cryptX_bild_wechsel(select){ 
 		 document.getElementById("cryptXmailTo").src = select.options[select.options.selectedIndex].value; 
 		 return true; 
-		 }		//-->
+		 } 
+		</script>
+
+		<script type="text/javascript">
+			jQuery.ajax({
+				url: "<?php bloginfo('wpurl'); ?>?cryptx=news",
+				success: function(data) {
+					jQuery("#cryptx-news-content").html(data).fadeIn();
+				},
+				error: function() {
+					jQuery("#cryptx-news-content").html('An error ocured while loading News.').fadeIn();
+				}
+			});
 		</script>
 
 		</div>
