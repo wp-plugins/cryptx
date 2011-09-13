@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 3.0
+Version: 3.1
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -32,6 +32,9 @@ global $cryptX_var, $wp_version;
 
 if (@$cryptX_var['theContent']) {
 	rw_cryptx_filter('the_content');
+}
+if (@$cryptX_var['the_meta_key']) {
+	rw_cryptx_filter('the_meta_key');
 }
 if (@$cryptX_var['theExcerpt']) {
 	rw_cryptx_filter('the_excerpt');
@@ -198,12 +201,12 @@ function rw_cryptx_do_linktext($Match) {
 			break;
 
 		case 2: // alternative image for mail link
-			$linktext = "<img src=\"" . $cryptX_var['alt_linkimage'] . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var['alt_linkimage_title'] . "\" title=\"" . $cryptX_var['alt_linkimage_title'] . "\" />";
+			$linktext = "<img src=\"" . $cryptX_var['alt_linkimage'] . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var['alt_linkimage_title'] . "\" title=\"" . antispambot($cryptX_var['alt_linkimage_title']) . "\" />";
 			break;
 
 		case 3: // uploaded image for mail link
 			$imgurl = $cryptX_var['alt_uploadedimage'];
-			$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var['http_linkimage_title'] . "\" title=\"" . $cryptX_var['http_linkimage_title'] . "\" />";
+			$linktext = "<img src=\"" . $imgurl . "\" class=\"cryptxImage\" alt=\"" . $cryptX_var['http_linkimage_title'] . "\" title=\"" .antispambot( $cryptX_var['http_linkimage_title']) . "\" />";
 			break;
 
 		case 4: // text scrambled by antispambot
@@ -211,7 +214,7 @@ function rw_cryptx_do_linktext($Match) {
 			break;
 
 		case 5: // convert to image
-			$linktext = "<img src=\"" . get_bloginfo('url') . "/" . md5( get_bloginfo('url') ) . "/" . antispambot($Match[1]) . "\" class=\"cryptxImage\" style=\"vertical-align:text-bottom\" alt=\"" . antispambot($Match[1]) . "\" title=\"" . antispambot($Match[1]) . "\" />";
+			$linktext = "<img src=\"" . get_bloginfo('url') . "/" . md5( get_bloginfo('url') ) . "/" . antispambot($Match[1]) . "\" class=\"cryptxImage\" alt=\"" . antispambot($Match[1]) . "\" title=\"" . antispambot($Match[1]) . "\" />";
 			break;
 
 		default:
@@ -314,6 +317,7 @@ function rw_cryptx_install() {
 				'at' => ' [at] ',
 				'dot' => ' [dot] ',
 				'theContent' => 1,
+				'the_meta_key' => 1,
 				'theExcerpt' => 0,
 				'commentText' => 1,
 				'widgetText' => 0,
@@ -566,6 +570,7 @@ function rw_cryptx_submenu() {
 		<tr valign="top">
 			<th scope="row"><?php _e("Apply CryptX to...",'cryptx'); ?></th>
 			<td><input name="cryptX_var[theContent]" type="checkbox"  <?php echo (isset($cryptX_var['theContent'])  == true) ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<?php _e("Content",'cryptx'); ?> <?php _e("(<i>this can be disabled per Post by an Option</i>)",'cryptx'); ?><br/>
+				<input name="cryptX_var[the_meta_key]" type="checkbox"  <?php echo (isset($cryptX_var['the_meta_key'])  == true) ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<?php _e("Custom fields",'cryptx'); ?><br/>
 				<input name="cryptX_var[theExcerpt]" type="checkbox"  <?php echo (isset($cryptX_var['theExcerpt'])  == true) ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<?php _e("Excerpt",'cryptx'); ?><br/>
 				<input name="cryptX_var[commentText]" type="checkbox" <?php echo (isset($cryptX_var['commentText']) == true) ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<?php _e("Comments",'cryptx'); ?><br/>
 				<input name="cryptX_var[widgetText]" type="checkbox"  <?php echo (isset($cryptX_var['widgetText'])  == true) ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<?php _e("Widgets",'cryptx'); ?> <?php _e("(<i>works only on all widgets, not on a single widget</i>!)",'cryptx'); ?></td>
