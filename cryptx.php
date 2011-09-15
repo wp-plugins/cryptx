@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 3.1
+Version: 3.1.1
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -296,6 +296,7 @@ function rw_cryptx_autolink($content, $shortcode=false) {
 	$src[]="/^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 	$src[]="/(<a[^>]*>)<a[^>]*>/";
 	$src[]="/(<\/A>)<\/A>/i";
+	
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>";
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
@@ -476,8 +477,7 @@ function rw_cryptx_submenu() {
 			</td>
 		</tr>
 		<tr>
-			<td colspan="3" align="center">
-			Please support me by translating CryptX into other languages. You can download the cryptx.pot file from my <a href="http://weber-nrw.de/wordpress/cryptx/downloads/">site</a> and mail me the zipped language files. Thanks for it.
+			<td colspan="3" align="center" style="font-weight: bold;"><?php _e("Please support me by translating CryptX into other languages. You can download the cryptx.pot file from my",'cryptx'); ?> <a href="http://weber-nrw.de/wordpress/cryptx/downloads/"><?php _e("site",'cryptx'); ?></a> <?php _e("and mail me the zipped language files. Thanks for it.",'cryptx'); ?> 
 			</td>
 		</tr>
 	</table>
@@ -603,7 +603,7 @@ function rw_cryptx_submenu() {
 	<div class="inside">
 	<table class="form-table">
 		<tr>
-			<td>In your Template you can use the following function to encrypt a email address:
+			<td><?php _e("In your Template you can use the following function to encrypt a email address:",'cryptx'); ?>
 			<p style="border:1px solid #000; background-color: #e9e9e9;padding: 10px;">
 			<i>
 			&lt;?php <br/>
@@ -617,10 +617,13 @@ function rw_cryptx_submenu() {
 			&nbsp;&nbsp;&nbsp;&nbsp;    } <br/>
 			?&gt;
 			</i></p>
-			<ol><li>parameter is the email address.</li>
-			<li>parameter is the linktext. If none given the email address is used.</li>
-			<li>parameter is a css class added to the link.</li>
-			<li>parameter is 1 for echo the encrypted email address or 0 to return the redult to a variable.</li></ol></td>
+			<ol>
+			<li><?php _e("parameter is the email address.",'cryptx'); ?></li>
+			<li><?php _e("parameter is the linktext. If none given the email address is used.",'cryptx'); ?></li>
+			<li><?php _e("parameter is a css class added to the link.",'cryptx'); ?></li>
+			<li><?php _e("parameter is 1 for echo the encrypted email address or 0 to return the result to a variable.",'cryptx'); ?></li>
+			</ol>
+			</td>
 		</tr>
 	</table>
 	</div>
@@ -657,7 +660,13 @@ function rw_cryptx_submenu() {
 */
 function cryptx( $content, $text="", $css="", $echo=1 ) {
 	global $cryptX_var;
+	$content = explode("?", $content);
+	$content = $tmp[0];
+	$params = $tmp[1];
 	$content = rw_cryptx_autolink( $content, true );
+	if (!empty($params)) {
+		$content = preg_replace( '/(.*\")(.*)(\".*>)(.*)(<\/a>)/i', '$1$2?'.$params.'$3$4$5', $content );		
+	}
 	$content = rw_cryptx_encryptx( $content, true );
 	$content = rw_cryptx_linktext( $content, true );
 	if("" != $text) {

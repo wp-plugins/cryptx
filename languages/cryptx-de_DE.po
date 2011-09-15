@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CryptX 2.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-13 13:17+0100\n"
-"PO-Revision-Date: 2011-09-13 13:18+0100\n"
+"POT-Creation-Date: 2011-09-15 10:43+0100\n"
+"PO-Revision-Date: 2011-09-15 10:50+0100\n"
 "Last-Translator: Ralf Weber <ralf@weber-nrw.de>\n"
 "Language-Team: Ralf Weber <ralf@weber-nrw.de>\n"
 "MIME-Version: 1.0\n"
@@ -21,33 +21,45 @@ msgid "Settings"
 msgstr "Einstellungen"
 
 #: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:159
-#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:473
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:474
 msgid "Donate"
 msgstr "Spenden"
 
-#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:443
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:444
 msgid "Settings saved."
 msgstr "Einstellungen speichern."
 
-#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:457
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:458
 msgid "Information"
 msgstr "Information"
 
-#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:467
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:468
 msgid "Plugin"
 msgstr "Plugin"
 
-#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:469
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:470
 msgid "Version"
 msgstr "Version"
 
-#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:471
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:472
 msgid "Author"
 msgstr "Autor"
 
-#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:472
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:473
 msgid "Follow on Twitter"
 msgstr "auf Twitter folgen"
+
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:480
+msgid "Please support me by translating CryptX into other languages. You can download the cryptx.pot file from my"
+msgstr "Bitte unterstützt mich bei der Übersetzung von CryptX in andere Sprachen. Du cryptx.pot Datei kann von meiner"
+
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:480
+msgid "site"
+msgstr "Internetseite"
+
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:480
+msgid "and mail me the zipped language files. Thanks for it."
+msgstr "heruntergeladen werden.<br/>Die Sprachdateien können mir dann einfach zu mailen. Danke."
 
 #: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:487
 msgid "Presentation"
@@ -200,6 +212,26 @@ msgstr "Füge mailto-Link zu allen nicht verlinkten Email Adressen"
 #: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:602
 msgid "How to use CryptX in your Template"
 msgstr "Wie bindest Du CryptX in Dein Template ein"
+
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:606
+msgid "In your Template you can use the following function to encrypt a email address:"
+msgstr "Im Template kannst Du zum verschlüsseln von Email Adressen die folgende Funktion von CryptX verwenden:"
+
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:621
+msgid "parameter is the email address."
+msgstr "Parameter ist die Email Adresse"
+
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:622
+msgid "parameter is the linktext. If none given the email address is used."
+msgstr "Parameter ist der angezeigte Text für den Link. Wenn nicht angegeben wird die Email Adresse genommen."
+
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:623
+msgid "parameter is a css class added to the link."
+msgstr "Parameter ist eine CSS Klasse die hinzugefügt werden soll."
+
+#: /Users/ralf/Dropbox/Code/CryptX/trunk/cryptx.php:624
+msgid "parameter is 1 for echo the encrypted email address or 0 to return the result to a variable."
+msgstr "Parameter ist entweder 1 zum direkten ausgeben oder 0 um das Ergebnis an eine Variable zu übergeben."
 
 #~ msgid "Upload your favorite email-image to "
 #~ msgstr "Speicher Dein bevorzugtes Email Bild nach "
