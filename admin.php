@@ -57,6 +57,7 @@ function rw_cryptx_showAdminMessages()
  * add links to plugin site
  */
 function rw_cryptx_init_row_meta($links, $file) {
+	if (CRYPTX_BASENAME == $file) {
 		return array_merge(
 			$links,
 			array(
@@ -73,6 +74,7 @@ function rw_cryptx_init_row_meta($links, $file) {
 				)
 			)
 		);
+	}
 	return $links;
 }
 
@@ -93,7 +95,7 @@ function rw_cryptx_menu() {
  * print CryptX Option Page
  */
 function rw_cryptx_submenu() {
-	global $cryptX_var;
+	global $cryptX_var, $data;
 	if (isset($_POST) && !empty($_POST)) {
 		if (function_exists('current_user_can') === true && (current_user_can('manage_options') === false || current_user_can('edit_plugins') === false)) {
 			wp_die("You don't have permission to access!");
@@ -150,7 +152,7 @@ function rw_cryptx_submenu() {
 				__('Plugin'),
 				'CryptX',
 				__('Version'),
-				$data['Version'],
+				rw_cryptx_version() /*$data['Version']*/,
 				__('Author'),
 				__('Follow on Twitter', 'cryptx'),
 				__('Donate', 'cryptx')
