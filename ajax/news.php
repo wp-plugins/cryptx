@@ -1,15 +1,28 @@
-<?php	
-if( !class_exists( 'WP_Http' ) )
-    include_once( ABSPATH . WPINC. '/class-http.php' );
-    
-    
-    $request = new WP_Http;
-	$result = $request->request( 'http://weber-nrw.de/category/wordpress/plugins/cryptx/' );
+<?php
 
-	if($result['response']['code'] != 200) exit;
-	preg_match_all('/<h1>(.*?)<\/h1>/i', $result['body'], $news);
-	$latest = implode("</li><li>", array_slice($news[1], 0, 3));
-	if ( $latest ) { 
-		echo  '<ul style="list-style: disc; padding-left:20px;"><li>'.$latest.'</li></ul>';
+if ( file_exists(ABSPATH . WPINC . '/rss.php') ) {
+	@require_once (ABSPATH . WPINC . '/rss.php');
+	// It's Wordpress 2.x. since it has been loaded successfully
+} elseif (file_exists(ABSPATH . WPINC . '/rss-functions.php')) {
+	@require_once (ABSPATH . WPINC . '/rss-functions.php');
+	// In Wordpress < 2.1
+} else {
+	die (__('Error in file: ' . __FILE__ . ' on line: ' . __LINE__ . '.<br />The Wordpress file "rss-functions.php" or "rss.php" could not be included.'));
+}
+
+$rss = fetch_rss('http://weber-nrw.de/category/wordpress/plugins/cryptx/feed/');
+$displayitems = 3;
+
+if ( $rss && ! is_wp_error($rss) ) {
+	$items = $rss->items;
+	if(count($items) < $displayitems) $displayitems = count($items);
+	$display = 0;
+	echo  '<ol>';
+	while($display < $displayitems){
+		echo '<li><a href="'.$items[$display]['link'].'">'.$items[$display]['title'].'</a></li>';
+		$display++;
 	}
+	echo  '</ol>';
+}
+exit;
 ?>

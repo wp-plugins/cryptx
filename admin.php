@@ -18,7 +18,7 @@ if (is_admin()) {
  * load admin notice after activate/update if needed
  */
 if(isset($cryptX_var['admin_notices_deprecated'])) {
-	add_action('admin_notices', 'rw_cryptx_showAdminMessages');	
+	add_action('admin_notices', 'rw_cryptx_showAdminMessages');
 	$cryptX_var['admin_notices_deprecated']=false;
 	update_option( 'cryptX', $cryptX_var);
 }
@@ -28,11 +28,11 @@ if(isset($cryptX_var['admin_notices_deprecated'])) {
  */
 function rw_cryptx_showAdminMessages()
 {
-	$searcher = new rw_cryptx_FileSystemStringSearch(get_template_directory().'/', ' cryptx('); 
-	$searcher->run(); 
-	
+	$searcher = new rw_cryptx_FileSystemStringSearch(get_template_directory().'/', ' cryptx(');
+	$searcher->run();
+
     if (current_user_can('manage_options')) {
-		if($searcher->getResultCount() > 0) { 
+		if($searcher->getResultCount() > 0) {
 			$msg = '<p><strong>';
 		    $msg .= __('You use the deprecated CryptX function cryptx() in your template. You should use the new function encryptx() described at the plugin', 'cryptx');
 			$msg .= sprintf(
@@ -41,15 +41,15 @@ function rw_cryptx_showAdminMessages()
 					__('Settings')
 				);
 			$msg .= '.</strong></p>';
-		    $msg .= '<ul>'; 
-		        foreach($searcher->getResults() as $result) { 
-		            $msg .= '<li><em>'.$result['filePath'].', line '.$result['lineNumber'].'</em></li>'; 
-		        } 
-		    $msg .= '</ul>'; 
+		    $msg .= '<ul>';
+		        foreach($searcher->getResults() as $result) {
+		            $msg .= '<li><em>'.$result['filePath'].', line '.$result['lineNumber'].'</em></li>';
+		        }
+		    $msg .= '</ul>';
 		    rw_cryptx_showMessage($msg, true);
 		} elseif(isset($_POST['cryptX_rescan_theme'])) {
 			rw_cryptx_showMessage('<p>'.__('Your theme is OK! You have nothing to do.','cryptx').'</p>');
-		} 
+		}
     }
 }
 
@@ -97,7 +97,7 @@ function rw_cryptx_menu() {
 function rw_cryptx_submenu() {
 	global $cryptX_var, $data;
 	if (isset($_POST) && !empty($_POST)) {
-		if (function_exists('current_user_can') === true && (current_user_can('manage_options') === false || current_user_can('edit_plugins') === false)) {
+		if (function_exists('current_user_can') === true && current_user_can('manage_options') === false) {
 			wp_die("You don't have permission to access!");
 		}
 		$saveOptions = $_POST['cryptX_var'];
@@ -119,7 +119,6 @@ function rw_cryptx_submenu() {
 					'metaBox' => 0,
 				);
 			$saveOptions = wp_parse_args( $saveOptions, $checkboxes );
-
 			update_option( 'cryptX', $saveOptions);
 			$cryptX_var = rw_loadDefaults();
 		?>
@@ -128,7 +127,7 @@ function rw_cryptx_submenu() {
 		</div>
 	<?php } ?>
 	<?php } ?>
-	
+
 	<div class="wrap">
 	<?php if (version_compare($GLOBALS['wp_version'], '2.6.999', '>')) { ?>
 	<div class="icon32" style="background: url(<?php echo @plugins_url('cryptx/icon32.png') ?>) no-repeat"><br /></div>
@@ -137,14 +136,14 @@ function rw_cryptx_submenu() {
 	<br class="clear" />
 	<form method="post" action="">
 	<?php wp_nonce_field('cryptX') ?>
-	<div id="poststuff" class="ui-sortable">
+	<div id="poststuff" class="meta-box-sortables ui-sortable">
 	<div id="rw_cryptx_information_box" class="postbox">
-	<h3><?php _e("Information",'cryptx'); ?></h3>
+	<h3><span><?php _e("Information",'cryptx'); ?></span></h3>
 	<div class="inside">
 	<table class="form-table">
 		<tr>
 			<td valign="top" width="1%" nowrap><b><i><u>NEWS:</u></i>&nbsp;</b></td>
-			<td valign="top"><div id="cryptx-news-content" style="display:none;"></div></td>
+			<td valign="top" style="padding:0;"><div id="cryptx-news-content" style="display:none;"></div></td>
 			<td valign="top" width="50%" style="border-left: 1px solid #999;"><?php
 			$data = get_plugin_data(__FILE__);
 			echo sprintf(
@@ -161,7 +160,7 @@ function rw_cryptx_submenu() {
 			</td>
 		</tr>
 		<tr>
-			<td colspan="3" align="center" style="font-weight: bold;"><?php _e("Please support me by translating CryptX into other languages. You can download the cryptx.pot file from my",'cryptx'); ?> <a href="http://weber-nrw.de/wordpress/cryptx/downloads/"><?php _e("site",'cryptx'); ?></a> <?php _e("and mail me the zipped language files. Thanks for it.",'cryptx'); ?> 
+			<td colspan="3" align="center" style="font-weight: bold;"><?php _e("Please support me by translating CryptX into other languages. You can download the cryptx.pot file from my",'cryptx'); ?> <a href="http://weber-nrw.de/wordpress/cryptx/downloads/"><?php _e("site",'cryptx'); ?></a> <?php _e("and mail me the zipped language files. Thanks for it.",'cryptx'); ?>
 			</td>
 		</tr>
 	</table>
@@ -171,7 +170,7 @@ function rw_cryptx_submenu() {
 	<div id="rw_cryptx_presentation_box" class="postbox">
 	<h3><?php _e("Presentation",'cryptx'); ?></h3>
 	<div class="inside">
-	
+
 	<h4><?php _e("Define CSS Options",'cryptx'); ?></h4>
 	<div class="postbox">
 	<table class="form-table">
@@ -185,7 +184,7 @@ function rw_cryptx_submenu() {
 		</tr>
 	</table>
 	</div>
-	
+
 	<h4><?php _e("Define Presentation Options",'cryptx'); ?></h4>
 	<div class="postbox">
 	<table class="form-table">
@@ -218,7 +217,7 @@ function rw_cryptx_submenu() {
 			<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext4" value="3" <?php checked( $cryptX_var['opt_linktext'], 3 ); ?> /></td>
 			<th><label for="cryptX_var[alt_uploadedimage]"><?php _e("Select image from folder",'cryptx'); ?></label></th>
 			<td>            	<select name="cryptX_var[alt_uploadedimage]" onchange="cryptX_bild_wechsel(this)">
-			<?php foreach(rw_cryptx_dirImages() as $image) { 
+			<?php foreach(rw_cryptx_dirImages() as $image) {
 				?>
 				<option value="<?php echo plugins_url('cryptx/images/').$image; ?>" <?php selected( $cryptX_var['alt_uploadedimage'], plugins_url('cryptx/images/').$image ); ?> ><?php echo $image; ?></option>
 			<?php } ?>
@@ -266,8 +265,8 @@ function rw_cryptx_submenu() {
 		<p><input type="submit" name="cryptX" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
 	</div>
 	</div>
-	
-	
+
+
 	<div id="rw_cryptx_general_box" class="postbox">
 	<h3><?php _e("General",'cryptx'); ?></h3>
 	<div class="inside">
@@ -308,8 +307,8 @@ function rw_cryptx_submenu() {
 		<p><input type="submit" name="cryptX" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
 	</div>
 	</div>
-	
-	
+
+
 	<div id="rw_encryptx_howto_box" class="postbox">
 	<h3><?php _e("How to use CryptX in your Template",'cryptx'); ?></h3>
 	<div class="inside">
@@ -339,7 +338,7 @@ function rw_cryptx_submenu() {
 			<i>
 			&lt;?php <br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;foreach(get_encryptx_meta($post->ID, $key, false) as $mail) {<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo $mail.'&lt;br/&gt;';</br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo $mail.'&lt;br/&gt;';</br/>
 			&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 			?&gt;
 			</i></p>
@@ -358,10 +357,10 @@ function rw_cryptx_submenu() {
 
 	</form>
 	<script type="text/javascript">
-	function cryptX_bild_wechsel(select){ 
-	 document.getElementById("cryptXmailTo").src = select.options[select.options.selectedIndex].value; 
-	 return true; 
-	 } 
+	function cryptX_bild_wechsel(select){
+	 document.getElementById("cryptXmailTo").src = select.options[select.options.selectedIndex].value;
+	 return true;
+	 }
 	</script>
 	<script type="text/javascript">
 		jQuery.ajax({

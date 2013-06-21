@@ -3,8 +3,8 @@ Contributors: Ralf Weber
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail, javascript, post, page, widget, image, comment, excerpt, custom fields
 Requires at least: 3.0
-Tested up to: 3.5-alpha
-Stable tag: 3.2.2
+Tested up to: 3.6-beta3
+Stable tag: 3.2.3
 
 == Description ==
 
@@ -22,6 +22,9 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 == Changelog ==
 
 See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 3.2.3 =
+* minor bugs fixed
+* added support for wordpress multisites
 = 3.2.2 =
 * minor bugs fixed
 * deprecated template function 'cryptx' removed
