@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 3.2.2
+Version: 3.2.4
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -15,12 +15,12 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 */
 
-/**
- * Don't load this file direct!
- */
-if (!defined('ABSPATH')) {
-	return ;
-	}
+//avoid direct calls to this file, because now WP core and framework has been used
+if ( ! function_exists('add_action') ) {
+	header('Status: 403 Forbidden');
+	header('HTTP/1.1 403 Forbidden');
+	exit();
+}
 
 /**
  * some basics
@@ -52,9 +52,9 @@ if (@$cryptX_var['java']) {
 }
 
 if (@$cryptX_var['metaBox']) {
-	add_action('admin_menu', 		'rw_cryptx_meta_box'); 
+	add_action('admin_menu', 		'rw_cryptx_meta_box');
 	add_action('wp_insert_post', 	'rw_cryptx_insert_post' );
-	add_action('wp_update_post', 	'rw_cryptx_insert_post' ); 
+	add_action('wp_update_post', 	'rw_cryptx_insert_post' );
 }
 
 if ( version_compare( $wp_version, '2.8', '>' ) ) {
@@ -92,7 +92,7 @@ function encryptx( $content, $args="" ) {
 	global $cryptX_var;
 
 	$is_shortcode = true;
-	
+
 	// Parse incomming $args into an array and merge it with $defaults
 	$encryptx_vars = rw_loadDefaults( $args );
 
@@ -105,7 +105,7 @@ function encryptx( $content, $args="" ) {
 	if($encryptx_vars['autolink']) {
 		$content = rw_cryptx_autolink( $content, true );
 		if (!empty($params)) {
-			$content = preg_replace( '/(.*\")(.*)(\".*>)(.*)(<\/a>)/i', '$1$2?'.$params.'$3$4$5', $content );		
+			$content = preg_replace( '/(.*\")(.*)(\".*>)(.*)(<\/a>)/i', '$1$2?'.$params.'$3$4$5', $content );
 		}
 	}
 	$content = rw_cryptx_encryptx( $content, true );
@@ -119,14 +119,14 @@ function encryptx( $content, $args="" ) {
 	if(!empty($encryptx_vars['css_class'])) {
 		$content = preg_replace( '/(.*)(">)/i', '$1" class="'.$encryptx_vars['css_class'].'">', $content );
 	}
-	
+
 	$is_shortcode = false;
-	
+
 	if(!$encryptx_vars['echo'])
 		return $content;
-	
+
 	echo $content;
-	
+
 }
 
 /**
@@ -134,9 +134,9 @@ function encryptx( $content, $args="" ) {
  * call it with the default get_post_meta parameters
  **/
 function get_encryptx_meta( $post_id, $key, $single=false ) {
-	
+
 	$values = get_post_meta( $post_id, $key, $single );
-	
+
 	if(is_array($values)) {
 		$return = array();
 		foreach( $values as $value) {
