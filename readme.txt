@@ -4,12 +4,12 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail, javascript, post, page, widget, image, comment, excerpt, custom fields
 Requires at least: 3.0
 Tested up to: 3.6-beta3
-Stable tag: 3.2.3
+Stable tag: 3.2.4
 
 == Description ==
 
-No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, 
-with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add 
+No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses,
+with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add
 a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
 
 [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage")
@@ -22,6 +22,8 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 == Changelog ==
 
 See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 3.2.4 =
+* minor bug fixed
 = 3.2.3 =
 * minor bugs fixed
 * added support for wordpress multisites
@@ -67,7 +69,7 @@ See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") f
 = 2.5.1 =
 * Added Option to disabled/enable the CryptX Widget on editing a post or page.
 = 2.5.0 =
-* Changed the location to store the disabled per post/page option from postmeta to CryptX Options. This should keep the postmeta fields clean. 
+* Changed the location to store the disabled per post/page option from postmeta to CryptX Options. This should keep the postmeta fields clean.
 = 2.4.6 =
 * added support for ssl-secured sites
 = 2.4.5 =

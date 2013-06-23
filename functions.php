@@ -285,7 +285,6 @@ function rw_cryptx_autolink($content, $shortcode=false) {
 	$postID = (is_object($post))? $post->ID : -1;
 	if (rw_cryptx_excluded($postID) AND $shortcode==false) return $content;
 	$src[]="/([\s])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
-	$src[]="/(['\"])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(['\"])/si";
 	$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(<)/si";
 	$src[]="/(\()([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))(\))/si";
 	$src[]="/(>)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))([\s])/si";
@@ -295,7 +294,6 @@ function rw_cryptx_autolink($content, $shortcode=false) {
 	$src[]="/(<\/A>)<\/A>/i";
 
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>";
-	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
