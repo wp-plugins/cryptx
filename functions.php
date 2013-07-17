@@ -207,7 +207,7 @@ function rw_cryptx_listDir( $path, $filter) {
 	$verzeichnisinhalt = array();
 	while (true == ($file = readdir($fh)))
 	{
-		if ( in_array( substr( strtolower($file), -3)), $filter )
+		if ( in_array( substr( strtolower($file), -3), $filter ))
 			{
 			$verzeichnisinhalt[] = $file;
 			}
