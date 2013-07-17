@@ -232,7 +232,7 @@ function rw_cryptx_encryptx($content, $shortcode=false) {
  * encryptx adresses with javascript
  */
 function rw_cryptx_mailtocrypt($Match) {
-	global $cryptX_var;
+	global $cryptX_var, $is_js_needed;
 	$return = $Match[0];
 	$mailto = "mailto:" . $Match[4];
 	if (substr($Match[4], 0, 9) =="?subject=") return $return;
@@ -248,6 +248,10 @@ function rw_cryptx_mailtocrypt($Match) {
 		}
 		$javascript="javascript:DeCryptX('" . $crypt . "')";
 		$return = str_replace( "mailto:".$Match[4], $javascript, $return);
+		if($is_js_needed === false AND $Match[0] != $return){
+			wp_enqueue_script('decryptx');
+			$is_js_needed = true;
+		}
 	} else {
 			$return = str_replace( $mailto, antispambot($mailto), $return);
 	}
@@ -320,14 +324,6 @@ function rw_cryptx_install() {
 	}
 	update_option( 'cryptX', $cryptX_var);
 	$cryptX_var = rw_loadDefaults(); // reread Options
-}
-
-/*
- * add code to site for loading the needed javascript
- */
-function rw_cryptx_javascript() {
-	global $cryptX_var;
-	wp_enqueue_script( 'decryptx', plugins_url( '/js/cryptx.min.js' , __FILE__ ), array(), false, $cryptX_var['load_java'] );
 }
 
 /*
