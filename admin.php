@@ -217,7 +217,7 @@ function rw_cryptx_submenu() {
 			<td scope="row"><input type="radio" name="cryptX_var[opt_linktext]" id="opt_linktext4" value="3" <?php checked( $cryptX_var['opt_linktext'], 3 ); ?> /></td>
 			<th><label for="cryptX_var[alt_uploadedimage]"><?php _e("Select image from folder",'cryptx'); ?></label></th>
 			<td>            	<select name="cryptX_var[alt_uploadedimage]" onchange="cryptX_bild_wechsel(this)">
-			<?php foreach(rw_cryptx_dirImages() as $image) {
+			<?php foreach(rw_cryptx_listDir(plugin_dir_path( __FILE__ ).'images', array("jpg","gif")) as $image) {
 				?>
 				<option value="<?php echo plugins_url('cryptx/images/').$image; ?>" <?php selected( $cryptX_var['alt_uploadedimage'], plugins_url('cryptx/images/').$image ); ?> ><?php echo $image; ?></option>
 			<?php } ?>
@@ -243,7 +243,7 @@ function rw_cryptx_submenu() {
 			<td>&nbsp;</td>
 			<th><label for="cryptX_var[c2i_font]"><?php _e("Choose a Font",'cryptx'); ?></label></th>
 			<td><select name="cryptX_var[c2i_font]">
-			<?php foreach(rw_cryptx_dirFonts() as $font) { ?>
+			<?php foreach(rw_cryptx_listDir(plugin_dir_path( __FILE__ ).'fonts', "ttf") as $font) { ?>
 				<option value="<?php echo plugin_dir_path( __FILE__ ).'fonts/'.$font; ?>" <?php selected( $cryptX_var['c2i_font'], plugin_dir_path( __FILE__ ).'fonts/'.$font ); ?> ><?php echo $font; ?></option>
 			<?php } ?>
 			</select><br/>

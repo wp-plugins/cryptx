@@ -14,8 +14,8 @@ if (!defined('ABSPATH')) {
  *	Loading defaults
  */
 function rw_loadDefaults($options='') {
-	$firstImage = rw_cryptx_dirImages();
-	$firstFont = rw_cryptx_dirFonts();
+	$firstImage = rw_cryptx_listDir(plugin_dir_path( __FILE__ ).'images', array("jpg","gif"));
+	$firstFont = rw_cryptx_listDir(plugin_dir_path( __FILE__ ).'fonts', "ttf");
 	$defaults = array(
 				'at' => ' [at] ',
 				'dot' => ' [dot] ',
@@ -199,32 +199,15 @@ function rw_cryptx_do_linktext($Match) {
 }
 
 /*
- * show images from dir
+ * get filtered content of directory
  */
-function rw_cryptx_dirImages() {
-	$dir = plugin_dir_path( __FILE__ ).'images';
-	$fh = opendir($dir);
+function rw_cryptx_listDir( $path, $filter) {
+	if(!is_array($filter)) $filter = (array)$filter;
+	$fh = opendir($path);
 	$verzeichnisinhalt = array();
 	while (true == ($file = readdir($fh)))
 	{
-		if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif"))
-			{
-			$verzeichnisinhalt[] = $file;
-			}
-	}
-	return $verzeichnisinhalt;
-}
-
-/*
- * show fonts from dir
- */
-function rw_cryptx_dirFonts() {
-	$dir = plugin_dir_path( __FILE__ ).'fonts';
-	$fh = opendir($dir);
-	$verzeichnisinhalt = array();
-	while (true == ($file = readdir($fh)))
-	{
-		if ((substr(strtolower($file), -3)=="ttf") or (substr(strtolower($file), -3)=="ttf"))
+		if ( in_array( substr( strtolower($file), -3)), $filter )
 			{
 			$verzeichnisinhalt[] = $file;
 			}
@@ -342,9 +325,9 @@ function rw_cryptx_install() {
 /*
  * add code to site for loading the needed javascript
  */
-function rw_cryptx_header() {
-	$cryptX_script = "<script type=\"text/javascript\" src=\"" . site_url() . '/' . PLUGINDIR . '/' . dirname(plugin_basename (__FILE__)) . "/js/cryptx.min.js\"></script>\n";
-	print($cryptX_script);
+function rw_cryptx_javascript() {
+	global $cryptX_var;
+	wp_enqueue_script( 'decryptx', plugins_url( '/js/cryptx.min.js' , __FILE__ ), array(), false, $cryptX_var['load_java'] );
 }
 
 /*
