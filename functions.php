@@ -11,11 +11,11 @@ if (!defined('ABSPATH')) {
 	}
 
 /*
- *	Loading defaults 
+ *	Loading defaults
  */
 function rw_loadDefaults($options='') {
-	$firstImage = rw_cryptx_dirImages();
-	$firstFont = rw_cryptx_dirFonts();
+	$firstImage = rw_cryptx_listDir(plugin_dir_path( __FILE__ ).'images', array("jpg","gif"));
+	$firstFont = rw_cryptx_listDir(plugin_dir_path( __FILE__ ).'fonts', "ttf");
 	$defaults = array(
 				'at' => ' [at] ',
 				'dot' => ' [dot] ',
@@ -45,7 +45,7 @@ function rw_loadDefaults($options='') {
 			);
 	$return = wp_parse_args( get_option('cryptX'), $defaults );
 	$return = (is_array($options))? wp_parse_args( $options, $return ) : $return ;
-	
+
 	return $return;
 }
 
@@ -71,9 +71,9 @@ function rw_cryptx_parse_request( $wp ) {
 			case 'news':
 				include( 'ajax/news.php' );
 				break;
-		}			
+		}
 		exit;
-	}	
+	}
 }
 
 /*
@@ -86,12 +86,12 @@ function rw_cryptx_init_tinyurl() {
 	if ( count( $params ) > 1 ) {
 		$tiny_url = $params[count( $params ) -2];
 		if ( $tiny_url == md5( get_bloginfo('url') ) ) {
-			$font = $cryptX_var['c2i_font']; 
+			$font = $cryptX_var['c2i_font'];
 			$msg = $params[count( $params ) -1];
-			$size = $cryptX_var['c2i_fontSize']; 
+			$size = $cryptX_var['c2i_fontSize'];
 			$pad = 1;
 			$transparent = 1;
-			$red = hexdec(substr($cryptX_var['c2i_fontRGB'],0,2)); 
+			$red = hexdec(substr($cryptX_var['c2i_fontRGB'],0,2));
 			$grn = hexdec(substr($cryptX_var['c2i_fontRGB'],2,2));
 			$blu = hexdec(substr($cryptX_var['c2i_fontRGB'],4,2));
 			$bg_red = 255 - $red;
@@ -132,7 +132,7 @@ function rw_cryptx_filter($apply) {
 		add_filter($apply, 'rw_cryptx_autolink', 5);
 		if (!empty($shortcode_tags) || is_array($shortcode_tags)) {
 			add_filter($apply, 'rw_cryptx_autolink', 11);
-		}		
+		}
 	}
 	add_filter($apply, 'rw_cryptx_encryptx', 12);
 	add_filter($apply, 'rw_cryptx_linktext', 13);
@@ -150,7 +150,7 @@ function rw_cryptx_excluded($ID) {
 }
 
 /*
- *	search for link texts	
+ *	search for link texts
  */
 function rw_cryptx_linktext($content, $shortcode=false) {
 	global $post;
@@ -158,7 +158,7 @@ function rw_cryptx_linktext($content, $shortcode=false) {
 	if (!rw_cryptx_excluded($postID) OR $shortcode!=false) {
 		$content = preg_replace_callback("/([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/i", 'rw_cryptx_do_Linktext', $content );
 	}
-	return $content;	
+	return $content;
 }
 
 /*
@@ -199,32 +199,15 @@ function rw_cryptx_do_linktext($Match) {
 }
 
 /*
- * show images from dir
+ * get filtered content of directory
  */
-function rw_cryptx_dirImages() {
-	$dir = plugin_dir_path( __FILE__ ).'images'; 
-	$fh = opendir($dir);
+function rw_cryptx_listDir( $path, $filter) {
+	if(!is_array($filter)) $filter = (array)$filter;
+	$fh = opendir($path);
 	$verzeichnisinhalt = array();
 	while (true == ($file = readdir($fh)))
 	{
-		if ((substr(strtolower($file), -3)=="jpg") or (substr(strtolower($file), -3)=="gif")) 
-			{
-			$verzeichnisinhalt[] = $file;
-			}
-	}
-	return $verzeichnisinhalt;
-}
-
-/*
- * show fonts from dir
- */
-function rw_cryptx_dirFonts() {
-	$dir = plugin_dir_path( __FILE__ ).'fonts'; 
-	$fh = opendir($dir);
-	$verzeichnisinhalt = array();
-	while (true == ($file = readdir($fh)))
-	{
-		if ((substr(strtolower($file), -3)=="ttf") or (substr(strtolower($file), -3)=="ttf")) 
+		if ( in_array( substr( strtolower($file), -3)), $filter )
 			{
 			$verzeichnisinhalt[] = $file;
 			}
@@ -265,9 +248,9 @@ function rw_cryptx_mailtocrypt($Match) {
 		}
 		$javascript="javascript:DeCryptX('" . $crypt . "')";
 		$return = str_replace( "mailto:".$Match[4], $javascript, $return);
-	} else {				
+	} else {
 			$return = str_replace( $mailto, antispambot($mailto), $return);
-	}	
+	}
 	if(!empty($cryptX_var['css_id'])) {
 		$return = preg_replace( '/(.*)(">)/i', '$1" id="'.$cryptX_var['css_id'].'">', $return );
 	}
@@ -292,7 +275,7 @@ function rw_cryptx_autolink($content, $shortcode=false) {
 	$src[]="/^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,}))/si";
 	$src[]="/(<a[^>]*>)<a[^>]*>/";
 	$src[]="/(<\/A>)<\/A>/i";
-	
+
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>";
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
 	$tar[]="\\1<a href=\"mailto:\\2\">\\2</a>\\6";
@@ -322,7 +305,7 @@ function rw_cryptx_install() {
 			sort($tmp);
 			$cryptX_var['excludedIDs'] = implode(",", $tmp);
 			update_option( 'cryptX', $cryptX_var);
-			$cryptX_var = rw_loadDefaults(); // reread Options			
+			$cryptX_var = rw_loadDefaults(); // reread Options
 			$wpdb->query("DELETE FROM $wpdb->postmeta WHERE meta_key = 'cryptxoff'");
 		}
 	}
@@ -342,9 +325,9 @@ function rw_cryptx_install() {
 /*
  * add code to site for loading the needed javascript
  */
-function rw_cryptx_header() {
-	$cryptX_script = "<script type=\"text/javascript\" src=\"" . site_url() . '/' . PLUGINDIR . '/' . dirname(plugin_basename (__FILE__)) . "/js/cryptx.js\"></script>\n";
-	print($cryptX_script);
+function rw_cryptx_javascript() {
+	global $cryptX_var;
+	wp_enqueue_script( 'decryptx', plugins_url( '/js/cryptx.min.js' , __FILE__ ), array(), false, $cryptX_var['load_java'] );
 }
 
 /*
@@ -382,7 +365,7 @@ function rw_cryptx_option() {
 		<input type="checkbox" name="cryptxoff" <?php if (rw_cryptx_excluded($post->ID)) { echo 'checked="checked"'; } ?>/> Disable CryptX for this post/page
 	</div>
 	</fieldset>
-<?php 
+<?php
 	}
 }
 
@@ -422,6 +405,6 @@ function rw_cryptx_showMessage($message, $errormsg = false)
 	}
 
 	echo "$message</div>";
-} 
+}
 
 ?>
