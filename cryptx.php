@@ -3,7 +3,7 @@
 Plugin Name: CryptX
 Plugin URI: http://weber-nrw.de/wordpress/cryptx/
 Description: No more SPAM by spiders scanning you site for email adresses. With CryptX you can hide all your email adresses, with and without a mailto-link, by converting them using javascript or UNICODE. Although you can choose to add a mailto-link to all unlinked email adresses with only one klick at the settings. That's great, isn't it?
-Version: 3.2.7
+Version: 3.2.8
 Author: Ralf Weber
 Author URI: http://weber-nrw.de/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
@@ -17,9 +17,9 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 
 //avoid direct calls to this file, because now WP core and framework has been used
 if ( ! function_exists('add_action') ) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
-	exit();
+    header('Status: 403 Forbidden');
+    header('HTTP/1.1 403 Forbidden');
+    exit();
 }
 
 /**
@@ -37,24 +37,32 @@ $cryptX_var = rw_loadDefaults();
 $is_js_needed = false;
 
 foreach($cryptX_var['filter'] as $filter) {
-	if (@$cryptX_var[$filter]) {
-		rw_cryptx_filter($filter);
-	}
+    if (@$cryptX_var[$filter]) {
+        rw_cryptx_filter($filter);
+    }
 }
 
 add_action( 'activate_' . plugin_basename( __FILE__ ), 'rw_cryptx_install' );
-wp_register_script( 'decryptx', plugins_url( '/js/cryptx.min.js' , __FILE__ ), array(), false, $cryptX_var['load_java'] );
+
+// Register Script
+function cryptx_javascripts_load() {
+    global $cryptX_var;
+    wp_enqueue_script( 'cryptx.js', plugins_url( '/js/cryptx.min.js' , __FILE__ ), false, false, $cryptX_var['load_java'] );
+}
+// Hook into the 'wp_enqueue_scripts' action
+add_action( 'wp_enqueue_scripts', 'cryptx_javascripts_load' );
+
 
 if (@$cryptX_var['metaBox']) {
-	add_action('admin_menu', 		'rw_cryptx_meta_box');
-	add_action('wp_insert_post', 	'rw_cryptx_insert_post' );
-	add_action('wp_update_post', 	'rw_cryptx_insert_post' );
+    add_action('admin_menu',         'rw_cryptx_meta_box');
+    add_action('wp_insert_post',     'rw_cryptx_insert_post' );
+    add_action('wp_update_post',     'rw_cryptx_insert_post' );
 }
 
 if ( version_compare( $wp_version, '2.8', '>' ) ) {
-	add_filter( 'plugin_row_meta', 'rw_cryptx_init_row_meta', 10, 2 ); // only 2.8 and higher
+    add_filter( 'plugin_row_meta', 'rw_cryptx_init_row_meta', 10, 2 ); // only 2.8 and higher
 } else {
-	add_filter( 'plugin_action_links', 'rw_cryptx_init_row_meta', 10, 2 );
+    add_filter( 'plugin_action_links', 'rw_cryptx_init_row_meta', 10, 2 );
 }
 
 add_filter( 'init', 'rw_cryptx_init_tinyurl');
@@ -78,48 +86,48 @@ function rw_cryptx_version() {
 * New Template functions...
 * $content = string to convert
 * $args    = string/array with the following parameters
-* 				array('text' => "", 'css_class' => "", 'css_id' => "", 'echo' => 1)
-*				or
-*				"text=&css_class=&css_id=&echo=1"
+*                 array('text' => "", 'css_class' => "", 'css_id' => "", 'echo' => 1)
+*                or
+*                "text=&css_class=&css_id=&echo=1"
 */
 function encryptx( $content, $args="" ) {
-	global $cryptX_var;
+    global $cryptX_var;
 
-	$is_shortcode = true;
+    $is_shortcode = true;
 
-	// Parse incomming $args into an array and merge it with $defaults
-	$encryptx_vars = rw_loadDefaults( $args );
+    // Parse incomming $args into an array and merge it with $defaults
+    $encryptx_vars = rw_loadDefaults( $args );
 
-	// OPTIONAL: Declare each item in $args as its own variable i.e. $type, $before.
-	// extract( $args, EXTR_SKIP );
+    // OPTIONAL: Declare each item in $args as its own variable i.e. $type, $before.
+    // extract( $args, EXTR_SKIP );
 
-	$tmp = explode("?", $content);
-	$content = $tmp[0];
-	$params = (!empty($tmp[1]))? $tmp[1] : '';
-	if($encryptx_vars['autolink']) {
-		$content = rw_cryptx_autolink( $content, true );
-		if (!empty($params)) {
-			$content = preg_replace( '/(.*\")(.*)(\".*>)(.*)(<\/a>)/i', '$1$2?'.$params.'$3$4$5', $content );
-		}
-	}
-	$content = rw_cryptx_encryptx( $content, true );
-	$content = rw_cryptx_linktext( $content, true );
-	if(!empty($encryptx_vars['text'])) {
-		$content = preg_replace( '/(.*">)(.*)(<.*)/i', '$1'.$encryptx_vars['text'].'$3', $content );
-	}
-	if(!empty($encryptx_vars['css_id'])) {
-		$content = preg_replace( '/(.*)(">)/i', '$1" id="'.$encryptx_vars['css_id'].'">', $content );
-	}
-	if(!empty($encryptx_vars['css_class'])) {
-		$content = preg_replace( '/(.*)(">)/i', '$1" class="'.$encryptx_vars['css_class'].'">', $content );
-	}
+    $tmp = explode("?", $content);
+    $content = $tmp[0];
+    $params = (!empty($tmp[1]))? $tmp[1] : '';
+    if($encryptx_vars['autolink']) {
+        $content = rw_cryptx_autolink( $content, true );
+        if (!empty($params)) {
+            $content = preg_replace( '/(.*\")(.*)(\".*>)(.*)(<\/a>)/i', '$1$2?'.$params.'$3$4$5', $content );
+        }
+    }
+    $content = rw_cryptx_encryptx( $content, true );
+    $content = rw_cryptx_linktext( $content, true );
+    if(!empty($encryptx_vars['text'])) {
+        $content = preg_replace( '/(.*">)(.*)(<.*)/i', '$1'.$encryptx_vars['text'].'$3', $content );
+    }
+    if(!empty($encryptx_vars['css_id'])) {
+        $content = preg_replace( '/(.*)(">)/i', '$1" id="'.$encryptx_vars['css_id'].'">', $content );
+    }
+    if(!empty($encryptx_vars['css_class'])) {
+        $content = preg_replace( '/(.*)(">)/i', '$1" class="'.$encryptx_vars['css_class'].'">', $content );
+    }
 
-	$is_shortcode = false;
+    $is_shortcode = false;
 
-	if(!$encryptx_vars['echo'])
-		return $content;
+    if(!$encryptx_vars['echo'])
+        return $content;
 
-	echo $content;
+    echo $content;
 
 }
 
@@ -129,18 +137,18 @@ function encryptx( $content, $args="" ) {
  **/
 function get_encryptx_meta( $post_id, $key, $single=false ) {
 
-	$values = get_post_meta( $post_id, $key, $single );
+    $values = get_post_meta( $post_id, $key, $single );
 
-	if(is_array($values)) {
-		$return = array();
-		foreach( $values as $value) {
-			$return[] = encryptx($value, array('echo' => 0));
-		}
-	} else {
-		$return = encryptx($values, array('echo' => 0));
-	}
+    if(is_array($values)) {
+        $return = array();
+        foreach( $values as $value) {
+            $return[] = encryptx($value, array('echo' => 0));
+        }
+    } else {
+        $return = encryptx($values, array('echo' => 0));
+    }
 
-	return $return;
+    return $return;
 
 }
 
