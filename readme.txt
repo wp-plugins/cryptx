@@ -1,9 +1,9 @@
 === CryptX ===
-Contributors: Ralf Weber
+Contributors: d3395
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail, javascript, post, page, widget, image, comment, excerpt, custom fields
 Requires at least: 3.0
-Tested up to: 3.6.1
+Tested up to: 3.8
 Stable tag: 3.2.8
 
 == Description ==
