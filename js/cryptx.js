@@ -2,14 +2,15 @@ function DeCryptString( s )
 {
 	var n = 0;
 	var r = "mailto:";
-	for( var i = 0; i < s.length; i++)
+	var h = s.substr( 0, 1 );
+	for( var i = 1; i < s.length; i++)
 	{
 	    n = s.charCodeAt( i );
 	    if( n >= 8364 )
 	    {
 		n = 128;
 	    }
-	    r += String.fromCharCode( n - 1 );
+	    r += String.fromCharCode( n - h );
 	}
 	return r;
 }

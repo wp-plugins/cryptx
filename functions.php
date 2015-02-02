@@ -237,16 +237,7 @@ function rw_cryptx_mailtocrypt($Match) {
     $mailto = "mailto:" . $Match[4];
     if (substr($Match[4], 0, 9) =="?subject=") return $return;
     if (@$cryptX_var['java']) {
-        $crypt = '';
-        $ascii = 0;
-        for ($i = 0; $i < strlen( $Match[4] ); $i++) {
-            $ascii = ord ( substr ( $Match[4], $i ) );
-            if (8364 <= $ascii) {
-                $ascii = 128;
-            }
-            $crypt .= chr($ascii + 1);
-        }
-        $javascript="javascript:DeCryptX('" . $crypt . "')";
+        $javascript="javascript:DeCryptX('" . rw_cryptx_generate_hash($Match[4]) . "')";
         $return = str_replace( "mailto:".$Match[4], $javascript, $return);
     } else {
             $return = str_replace( $mailto, antispambot($mailto), $return);
@@ -258,6 +249,26 @@ function rw_cryptx_mailtocrypt($Match) {
         $return = preg_replace( '/(.*)(">)/i', '$1" class="'.$cryptX_var['css_class'].'">', $return );
     }
     return $return;
+}
+
+/*
+ * generate the unique hash
+ */
+function rw_cryptx_generate_hash($string) {
+		$string = str_replace("&amp;", "&", $string);
+	    $rand = mt_rand(1, 9);
+        $crypt = ''.$rand ;
+        $ascii = 0;
+        for ($i = 0; $i < strlen( $string ); $i++) {
+            $ascii = ord ( substr ( $string, $i ) ) + $rand;
+            if (8364 <= $ascii) {
+                $ascii = 128;
+            }
+            // a single quote is impossible for hash! retry with new random...
+            if($ascii == 39) return rw_cryptx_generate_hash($string);
+            $crypt .= chr($ascii);
+        }
+        return $crypt;	
 }
 
 /*
