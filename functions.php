@@ -237,16 +237,7 @@ function rw_cryptx_mailtocrypt($Match) {
     $mailto = "mailto:" . $Match[4];
     if (substr($Match[4], 0, 9) =="?subject=") return $return;
     if (@$cryptX_var['java']) {
-        $crypt = '';
-        $ascii = 0;
-        for ($i = 0; $i < strlen( $Match[4] ); $i++) {
-            $ascii = ord ( substr ( $Match[4], $i ) );
-            if (8364 <= $ascii) {
-                $ascii = 128;
-            }
-            $crypt .= chr($ascii + 1);
-        }
-        $javascript="javascript:DeCryptX('" . $crypt . "')";
+        $javascript="javascript:DeCryptX('" . rw_cryptx_generate_hash($Match[4]) . "')";
         $return = str_replace( "mailto:".$Match[4], $javascript, $return);
     } else {
             $return = str_replace( $mailto, antispambot($mailto), $return);
@@ -258,6 +249,46 @@ function rw_cryptx_mailtocrypt($Match) {
         $return = preg_replace( '/(.*)(">)/i', '$1" class="'.$cryptX_var['css_class'].'">', $return );
     }
     return $return;
+}
+
+/*
+ * generate the unique hash
+ */
+function rw_cryptx_generate_hash($string) {
+		$string = str_replace("&amp;", "&", $string);
+		$blacklist = array( 
+							'32',	// Space
+							'39',	// Single quote
+							'60',	// Less than
+							'62',	// Greater than
+							'63',	// Question mark
+							'92',	// Backslash
+							'94',	// Caret - circumflex
+							'96',	// Grave accent
+							'127',	// Delete
+						);
+	    $salt	= mt_rand(1, 10);
+	    $type	= round(mt_rand(0, 100)/100 , 0);
+        $crypt	= ''.$salt.'¦' ;
+        $ascii	= 0;
+        
+        for ($i = 0; $i < strlen( $string ); $i++) {
+            if( $type == 1 ) {
+	            $ascii = ord ( substr ( $string, $i ) ) + $salt;            
+            } else {
+	            $ascii = ord ( substr ( $string, $i ) ) - $salt;
+            }
+            if (8364 <= $ascii) {
+                $ascii = 128;
+            }
+            // blacklisted chars are impossible for hash! retry with new random...
+            if(in_array($ascii, $blacklist)) {
+	            return rw_cryptx_generate_hash($string);
+	        }
+            $crypt .= chr($ascii);
+        }
+        $crypt .= '¦'.$type;
+        return $crypt;	
 }
 
 /*
