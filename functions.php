@@ -256,18 +256,38 @@ function rw_cryptx_mailtocrypt($Match) {
  */
 function rw_cryptx_generate_hash($string) {
 		$string = str_replace("&amp;", "&", $string);
-	    $rand = mt_rand(1, 9);
-        $crypt = ''.$rand ;
-        $ascii = 0;
+		$blacklist = array( 
+							'32',	// Space
+							'39',	// Single quote
+							'60',	// Less than
+							'62',	// Greater than
+							'63',	// Question mark
+							'92',	// Backslash
+							'94',	// Caret - circumflex
+							'96',	// Grave accent
+							'127',	// Delete
+						);
+	    $salt	= mt_rand(1, 10);
+	    $type	= round(mt_rand(0, 100)/100 , 0);
+        $crypt	= ''.$salt.'¦' ;
+        $ascii	= 0;
+        
         for ($i = 0; $i < strlen( $string ); $i++) {
-            $ascii = ord ( substr ( $string, $i ) ) + $rand;
+            if( $type == 1 ) {
+	            $ascii = ord ( substr ( $string, $i ) ) + $salt;            
+            } else {
+	            $ascii = ord ( substr ( $string, $i ) ) - $salt;
+            }
             if (8364 <= $ascii) {
                 $ascii = 128;
             }
-            // a single quote is impossible for hash! retry with new random...
-            if($ascii == 39) return rw_cryptx_generate_hash($string);
+            // blacklisted chars are impossible for hash! retry with new random...
+            if(in_array($ascii, $blacklist)) {
+	            return rw_cryptx_generate_hash($string);
+	        }
             $crypt .= chr($ascii);
         }
+        $crypt .= '¦'.$type;
         return $crypt;	
 }
 
