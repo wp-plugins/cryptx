@@ -6,8 +6,8 @@ function DeCryptString( s )
 	var x = t[0];
 	var y = t[2];
 	var z = x;
-	if( y === 0) {
-		z = -x;
+	if( y == 0) {
+		z = 0 - x;
 	}
 	for( var i = 0; i < t[1].length; i++)
 	{
