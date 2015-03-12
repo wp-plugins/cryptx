@@ -267,17 +267,12 @@ function rw_cryptx_generate_hash($string) {
 							'96',	// Grave accent
 							'127',	// Delete
 						);
-	    $salt	= mt_rand(1, 10);
-	    $type	= round(mt_rand(0, 100)/100 , 0);
-        $crypt	= ''.$salt.'¦' ;
+        $crypt	= '';
         $ascii	= 0;
         
         for ($i = 0; $i < strlen( $string ); $i++) {
-            if( $type == 1 ) {
-	            $ascii = ord ( substr ( $string, $i ) ) + $salt;            
-            } else {
-	            $ascii = ord ( substr ( $string, $i ) ) - $salt;
-            }
+	    	$salt	= mt_rand(0, 3);
+            $ascii = ord ( substr ( $string, $i ) ) + $salt;
             if (8364 <= $ascii) {
                 $ascii = 128;
             }
@@ -285,9 +280,8 @@ function rw_cryptx_generate_hash($string) {
             if(in_array($ascii, $blacklist)) {
 	            return rw_cryptx_generate_hash($string);
 	        }
-            $crypt .= chr($ascii);
+            $crypt .= $salt.chr($ascii);
         }
-        $crypt .= '¦'.$type;
         return $crypt;	
 }
 
