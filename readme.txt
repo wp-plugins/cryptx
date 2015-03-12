@@ -3,8 +3,8 @@ Contributors: d3395
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4026696
 Tags: encode, antispam, email, spam, spider, unicode, mailto, filter, spambot, decrypt, encrypt, mail, javascript, post, page, widget, image, comment, excerpt, custom fields
 Requires at least: 3.0
-Tested up to: 4.1
-Stable tag: 3.2.11
+Tested up to: 4.1.1
+Stable tag: 3.2.12
 
 == Description ==
 
@@ -22,6 +22,8 @@ a mailto-link to all unlinked email adresses with only one klick at the settings
 == Changelog ==
 
 See [Plugin Homepage](http://weber-nrw.de/wordpress/cryptx/ "Plugin Homepage") for details!
+= 3.2.12 =
+* fixed a bug in generating the CryptX hash value
 = 3.2.11 =
 * fixed a bug in javascript
 = 3.2.10 =
